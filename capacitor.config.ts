@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'auth-playground-ng',
+  appId: 'io.ionic.authplaygroundng',
+  appName: 'Auth Playground NG',
   webDir: 'www',
   bundledWebRuntime: false,
 };

@@ -1,0 +1,6 @@
+{
+  "appId": "io.ionic.authplaygroundng",
+  "appName": "Auth Playground NG",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
