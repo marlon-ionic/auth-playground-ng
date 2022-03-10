@@ -11,8 +11,7 @@ export class AuthGuardService implements CanActivate {
   constructor(private authentication: AuthenticationService, private navCtrl: NavController) {}
 
   async canActivate(): Promise<boolean> {
-    const authed = await this.authentication.isAuthenticated();
-    if (authed) {
+    if (await this.authentication.isAuthenticated()) {
       return true;
     } else {
       this.navCtrl.navigateRoot('/login');

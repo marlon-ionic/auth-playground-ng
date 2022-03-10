@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { AuthenticationService } from '@app/core';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-about',
@@ -6,5 +8,10 @@ import { Component } from '@angular/core';
   styleUrls: ['about.page.scss'],
 })
 export class AboutPage {
-  constructor() {}
+  constructor(private auth: AuthenticationService, private navController: NavController) {}
+
+  async logout(): Promise<void> {
+    await this.auth.logout();
+    this.navController.navigateRoot(['/', 'login']);
+  }
 }
