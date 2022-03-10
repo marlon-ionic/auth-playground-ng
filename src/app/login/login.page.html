@@ -1,0 +1,10 @@
+<ion-content class="ion-text-center main-content">
+  <div class="unlock-app" (click)="signIn()" data-testid="signin-button">
+    <ion-icon name="log-in-outline"></ion-icon>
+    <div>Sign In</div>
+  </div>
+
+  <div class="error-message" data-testid="error-message">
+    <div>{{ errorMessage }}</div>
+  </div>
+</ion-content>

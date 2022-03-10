@@ -6,7 +6,8 @@
       "@app/*": ["src/app/*"],
       "@env/*": ["src/environments/*"],
       "@test/*": ["test/*"],
-      "@capacitor/*": ["__mocks__/@capacitor/*"]
+      "@capacitor/*": ["__mocks__/@capacitor/*"],
+      "@ionic-enterprise/auth": ["__mocks__/@ionic-enterprise/auth.ts"]
     },
     "outDir": "./out-tsc/spec",
     "types": ["jasmine"]

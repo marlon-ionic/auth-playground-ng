@@ -10,7 +10,7 @@
     "lint": "ng lint",
     "ng": "ng",
     "prepare": "husky install",
-    "start": "ng serve",
+    "start": "ng serve --port=8100",
     "test": "ng test --no-watch",
     "test:debug": "ng test --browsers=Chrome",
     "test:dev": "ng test"
