@@ -1,4 +1,4 @@
-import { Vault } from '@ionic-enterprise/identity-vault';
+import { Vault, VaultType } from '@ionic-enterprise/identity-vault';
 import { Subject } from 'rxjs';
 import { SessionVaultService } from './session-vault.service';
 
@@ -15,6 +15,14 @@ export const createSessionVaultServiceMock = () => {
     onUnlock: undefined,
     onPasscodeRequested: undefined,
   });
+  mockVault.config = {
+    key: 'io.ionic.auth-playground-ng',
+    type: VaultType.SecureStorage,
+    lockAfterBackgrounded: 2000,
+    shouldClearVaultAfterTooManyFailedAttempts: true,
+    customPasscodeInvalidUnlockAttempts: 2,
+    unlockVaultOnLoad: false,
+  };
 
   const service = jasmine.createSpyObj<SessionVaultService>('SessionVaultService', {
     canUnlock: Promise.resolve(false),

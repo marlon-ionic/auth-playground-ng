@@ -92,28 +92,47 @@ describe('SessionVaultService', () => {
   });
 
   describe('initialize unlock type', () => {
-    it('uses a session PIN if no system PIN is set', async () => {
-      spyOn(Device, 'isSystemPasscodeSet').and.returnValue(Promise.resolve(false));
-      const expectedConfig = {
-        ...mockVault.config,
-        type: VaultType.CustomPasscode,
-        deviceSecurityType: DeviceSecurityType.None,
-      };
-      await service.initializeUnlockType();
-      expect(mockVault.updateConfig).toHaveBeenCalledTimes(1);
-      expect(mockVault.updateConfig).toHaveBeenCalledWith(expectedConfig);
+    describe('on mobile', () => {
+      beforeEach(() => {
+        const platform = TestBed.inject(Platform);
+        (platform.is as any).withArgs('hybrid').and.returnValue(true);
+      });
+
+      it('uses a session PIN if no system PIN is set', async () => {
+        spyOn(Device, 'isSystemPasscodeSet').and.returnValue(Promise.resolve(false));
+        const expectedConfig = {
+          ...mockVault.config,
+          type: VaultType.CustomPasscode,
+          deviceSecurityType: DeviceSecurityType.None,
+        };
+        await service.initializeUnlockType();
+        expect(mockVault.updateConfig).toHaveBeenCalledTimes(1);
+        expect(mockVault.updateConfig).toHaveBeenCalledWith(expectedConfig);
+      });
+
+      it('uses device security if a system PIN is set', async () => {
+        spyOn(Device, 'isSystemPasscodeSet').and.returnValue(Promise.resolve(true));
+        const expectedConfig = {
+          ...mockVault.config,
+          type: VaultType.DeviceSecurity,
+          deviceSecurityType: DeviceSecurityType.Both,
+        };
+        await service.initializeUnlockType();
+        expect(mockVault.updateConfig).toHaveBeenCalledTimes(1);
+        expect(mockVault.updateConfig).toHaveBeenCalledWith(expectedConfig);
+      });
     });
 
-    it('uses device security if a system PIN is set', async () => {
-      spyOn(Device, 'isSystemPasscodeSet').and.returnValue(Promise.resolve(true));
-      const expectedConfig = {
-        ...mockVault.config,
-        type: VaultType.DeviceSecurity,
-        deviceSecurityType: DeviceSecurityType.Both,
-      };
-      await service.initializeUnlockType();
-      expect(mockVault.updateConfig).toHaveBeenCalledTimes(1);
-      expect(mockVault.updateConfig).toHaveBeenCalledWith(expectedConfig);
+    describe('on mobile', () => {
+      beforeEach(() => {
+        const platform = TestBed.inject(Platform);
+        (platform.is as any).withArgs('hybrid').and.returnValue(false);
+      });
+
+      it('does not update the config', async () => {
+        await service.initializeUnlockType();
+        expect(mockVault.updateConfig).not.toHaveBeenCalled();
+      });
     });
   });
 

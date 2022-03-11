@@ -14,7 +14,11 @@ export class SessionVaultService {
   vault: Vault | BrowserVault;
   private lockedSubject: Subject<boolean>;
 
-  constructor(private modalController: ModalController, private vaultFactory: VaultFactoryService) {
+  constructor(
+    private modalController: ModalController,
+    private platform: Platform,
+    private vaultFactory: VaultFactoryService
+  ) {
     this.vault = this.vaultFactory.create({
       key: 'io.ionic.auth-playground-ng',
       type: VaultType.SecureStorage,
@@ -43,10 +47,12 @@ export class SessionVaultService {
   }
 
   async initializeUnlockType() {
-    if (await Device.isSystemPasscodeSet()) {
-      this.setUnlockMode('Device');
-    } else {
-      this.setUnlockMode('SessionPIN');
+    if (this.platform.is('hybrid')) {
+      if (await Device.isSystemPasscodeSet()) {
+        this.setUnlockMode('Device');
+      } else {
+        this.setUnlockMode('SessionPIN');
+      }
     }
   }
 
