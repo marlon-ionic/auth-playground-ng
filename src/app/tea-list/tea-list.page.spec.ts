@@ -11,7 +11,7 @@ describe('Tab1Page', () => {
     waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [TeaListPage],
-        imports: [IonicModule.forRoot(), ExploreContainerComponentModule],
+        imports: [IonicModule, ExploreContainerComponentModule],
       }).compileComponents();
 
       fixture = TestBed.createComponent(TeaListPage);

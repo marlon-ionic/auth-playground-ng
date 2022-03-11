@@ -12,7 +12,7 @@ describe('VaultControlPage', () => {
     waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [VaultControlPage],
-        imports: [IonicModule.forRoot(), ExploreContainerComponentModule],
+        imports: [IonicModule, ExploreContainerComponentModule],
       }).compileComponents();
 
       fixture = TestBed.createComponent(VaultControlPage);

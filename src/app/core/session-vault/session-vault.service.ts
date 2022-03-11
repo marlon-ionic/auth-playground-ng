@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { PinDialogComponent } from '@app/pin-dialog/pin-dialog.component';
-import { BrowserVault, DeviceSecurityType, Vault, VaultType } from '@ionic-enterprise/identity-vault';
-import { ModalController } from '@ionic/angular';
+import { BrowserVault, Device, DeviceSecurityType, Vault, VaultType } from '@ionic-enterprise/identity-vault';
+import { ModalController, Platform } from '@ionic/angular';
+import { Subject } from 'rxjs';
 import { VaultFactoryService } from './vault-factory.service';
 
 export type UnlockMode = 'Device' | 'SessionPIN' | 'NeverLock' | 'ForceLogin';
@@ -11,26 +12,42 @@ export type UnlockMode = 'Device' | 'SessionPIN' | 'NeverLock' | 'ForceLogin';
 })
 export class SessionVaultService {
   vault: Vault | BrowserVault;
+  private lockedSubject: Subject<boolean>;
 
-  constructor(private modalController: ModalController, vaultFactory: VaultFactoryService) {
-    this.vault = vaultFactory.create({
-      key: 'com.kensodemann.teataster',
+  constructor(private modalController: ModalController, private vaultFactory: VaultFactoryService) {
+    this.vault = this.vaultFactory.create({
+      key: 'io.ionic.auth-playground-ng',
       type: VaultType.SecureStorage,
-      lockAfterBackgrounded: 5000,
+      lockAfterBackgrounded: 2000,
       shouldClearVaultAfterTooManyFailedAttempts: true,
       customPasscodeInvalidUnlockAttempts: 2,
       unlockVaultOnLoad: false,
     });
 
-    // this.vault.onLock(() => store.dispatch(sessionLocked()));
+    this.lockedSubject = new Subject();
+
+    this.vault.onLock(() => this.lockedSubject.next(true));
+    this.vault.onUnlock(() => this.lockedSubject.next(false));
 
     this.vault.onPasscodeRequested(async (isPasscodeSetRequest: boolean) =>
       this.onPasscodeRequest(isPasscodeSetRequest)
     );
   }
 
+  get locked() {
+    return this.lockedSubject.asObservable();
+  }
+
   async canUnlock(): Promise<boolean> {
     return !(await this.vault.isEmpty()) && (await this.vault.isLocked());
+  }
+
+  async initializeUnlockType() {
+    if (await Device.isSystemPasscodeSet()) {
+      this.setUnlockMode('Device');
+    } else {
+      this.setUnlockMode('SessionPIN');
+    }
   }
 
   setUnlockMode(unlockMode: UnlockMode): Promise<void> {
@@ -45,22 +62,22 @@ export class SessionVaultService {
 
       case 'SessionPIN':
         type = VaultType.CustomPasscode;
-        deviceSecurityType = DeviceSecurityType.SystemPasscode;
+        deviceSecurityType = DeviceSecurityType.None;
         break;
 
       case 'ForceLogin':
         type = VaultType.InMemory;
-        deviceSecurityType = DeviceSecurityType.SystemPasscode;
+        deviceSecurityType = DeviceSecurityType.None;
         break;
 
       case 'NeverLock':
         type = VaultType.SecureStorage;
-        deviceSecurityType = DeviceSecurityType.SystemPasscode;
+        deviceSecurityType = DeviceSecurityType.None;
         break;
 
       default:
         type = VaultType.SecureStorage;
-        deviceSecurityType = DeviceSecurityType.SystemPasscode;
+        deviceSecurityType = DeviceSecurityType.None;
     }
 
     return this.vault.updateConfig({

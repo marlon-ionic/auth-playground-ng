@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { NavController } from '@ionic/angular';
+import { SessionVaultService } from './core';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +8,11 @@ import { Component } from '@angular/core';
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
-  constructor() {}
+  constructor(navController: NavController, vault: SessionVaultService) {
+    vault.locked.subscribe((lock: boolean) => {
+      if (lock) {
+        navController.navigateRoot(['/', 'unlock']);
+      }
+    });
+  }
 }

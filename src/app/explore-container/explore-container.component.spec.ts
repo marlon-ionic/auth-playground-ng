@@ -11,7 +11,7 @@ describe('ExploreContainerComponent', () => {
     waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [ExploreContainerComponent],
-        imports: [IonicModule.forRoot()],
+        imports: [IonicModule],
       }).compileComponents();
 
       fixture = TestBed.createComponent(ExploreContainerComponent);

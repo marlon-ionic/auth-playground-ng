@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from '@app/core';
+import { AuthenticationService, SessionVaultService } from '@app/core';
 import { NavController } from '@ionic/angular';
 
 @Component({
@@ -10,12 +10,17 @@ import { NavController } from '@ionic/angular';
 export class LoginPage {
   errorMessage: string;
 
-  constructor(private auth: AuthenticationService, private navController: NavController) {}
+  constructor(
+    private auth: AuthenticationService,
+    private navController: NavController,
+    private vault: SessionVaultService
+  ) {}
 
   async signIn(): Promise<void> {
     this.errorMessage = '';
     try {
       await this.auth.login();
+      await this.vault.initializeUnlockType();
       this.navController.navigateRoot(['/']);
     } catch (err) {
       this.errorMessage = 'Login failed. Please try again.';

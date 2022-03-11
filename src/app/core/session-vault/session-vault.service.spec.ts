@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { PinDialogComponent } from '@app/pin-dialog/pin-dialog.component';
-import { DeviceSecurityType, Vault, VaultType } from '@ionic-enterprise/identity-vault';
+import { Device, DeviceSecurityType, Vault, VaultType } from '@ionic-enterprise/identity-vault';
 import { ModalController, Platform } from '@ionic/angular';
 import { createOverlayControllerMock, createOverlayElementMock, createPlatformMock } from '@test/mocks';
 import { SessionVaultService, UnlockMode } from './session-vault.service';
@@ -24,6 +24,7 @@ describe('SessionVaultService', () => {
       updateConfig: Promise.resolve(),
       unlock: Promise.resolve(),
       onLock: undefined,
+      onUnlock: undefined,
       onPasscodeRequested: undefined,
     });
     (mockVault.onLock as any).and.callFake((callback: () => void) => (onLockCallback = callback));
@@ -64,17 +65,17 @@ describe('SessionVaultService', () => {
       {
         unlockMode: 'SessionPIN',
         type: VaultType.CustomPasscode,
-        deviceSecurityType: DeviceSecurityType.SystemPasscode,
+        deviceSecurityType: DeviceSecurityType.None,
       },
       {
         unlockMode: 'ForceLogin',
         type: VaultType.InMemory,
-        deviceSecurityType: DeviceSecurityType.SystemPasscode,
+        deviceSecurityType: DeviceSecurityType.None,
       },
       {
         unlockMode: 'NeverLock',
         type: VaultType.SecureStorage,
-        deviceSecurityType: DeviceSecurityType.SystemPasscode,
+        deviceSecurityType: DeviceSecurityType.None,
       },
     ].forEach(({ unlockMode, type, deviceSecurityType }) =>
       it(`updates the configuration for ${unlockMode}`, async () => {
@@ -90,15 +91,31 @@ describe('SessionVaultService', () => {
     );
   });
 
-  // describe('locking', () => {
-  //   it('dispatches sessionLocked', () => {
-  //     const store = TestBed.inject(Store);
-  //     spyOn(store, 'dispatch');
-  //     mockVault.lock();
-  //     expect(store.dispatch).toHaveBeenCalledTimes(1);
-  //     expect(store.dispatch).toHaveBeenCalledWith(sessionLocked());
-  //   });
-  // });
+  describe('initialize unlock type', () => {
+    it('uses a session PIN if no system PIN is set', async () => {
+      spyOn(Device, 'isSystemPasscodeSet').and.returnValue(Promise.resolve(false));
+      const expectedConfig = {
+        ...mockVault.config,
+        type: VaultType.CustomPasscode,
+        deviceSecurityType: DeviceSecurityType.None,
+      };
+      await service.initializeUnlockType();
+      expect(mockVault.updateConfig).toHaveBeenCalledTimes(1);
+      expect(mockVault.updateConfig).toHaveBeenCalledWith(expectedConfig);
+    });
+
+    it('uses device security if a system PIN is set', async () => {
+      spyOn(Device, 'isSystemPasscodeSet').and.returnValue(Promise.resolve(true));
+      const expectedConfig = {
+        ...mockVault.config,
+        type: VaultType.DeviceSecurity,
+        deviceSecurityType: DeviceSecurityType.Both,
+      };
+      await service.initializeUnlockType();
+      expect(mockVault.updateConfig).toHaveBeenCalledTimes(1);
+      expect(mockVault.updateConfig).toHaveBeenCalledWith(expectedConfig);
+    });
+  });
 
   describe('can unlock', () => {
     [

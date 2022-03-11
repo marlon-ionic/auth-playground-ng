@@ -5,7 +5,7 @@ import { TabsPage } from './tabs.page';
 
 const routes: Routes = [
   {
-    path: 'tabs',
+    path: '',
     component: TabsPage,
     canActivate: [AuthGuardService],
     children: [
@@ -21,17 +21,7 @@ const routes: Routes = [
         path: 'about',
         loadChildren: () => import('../about/about.module').then((m) => m.AboutPageModule),
       },
-      {
-        path: '',
-        redirectTo: '/tabs/tea-list',
-        pathMatch: 'full',
-      },
     ],
-  },
-  {
-    path: '',
-    redirectTo: '/tabs/tea-list',
-    pathMatch: 'full',
   },
 ];
 

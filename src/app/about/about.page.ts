@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthenticationService } from '@app/core';
+import { AuthenticationService, SessionVaultService } from '@app/core';
 import { NavController } from '@ionic/angular';
 
 @Component({
@@ -8,10 +8,15 @@ import { NavController } from '@ionic/angular';
   styleUrls: ['about.page.scss'],
 })
 export class AboutPage {
-  constructor(private auth: AuthenticationService, private navController: NavController) {}
+  constructor(
+    private auth: AuthenticationService,
+    private navController: NavController,
+    private sessionVault: SessionVaultService
+  ) {}
 
   async logout(): Promise<void> {
     await this.auth.logout();
+    await this.sessionVault.vault.clear();
     this.navController.navigateRoot(['/', 'login']);
   }
 }

@@ -1,9 +1,10 @@
 import { ComponentFixture, fakeAsync, TestBed, TestComponentRenderer, tick, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { AuthenticationService } from '@app/core';
-import { createAuthenticationServiceMock } from '@app/core/testing';
+import { AuthenticationService, SessionVaultService } from '@app/core';
+import { createAuthenticationServiceMock, createSessionVaultServiceMock } from '@app/core/testing';
 import { IonicModule, NavController } from '@ionic/angular';
 import { createNavControllerMock } from '@test/mocks';
+import { click } from '@test/util';
 import { LoginPage } from './login.page';
 
 describe('LoginPage', () => {
@@ -21,6 +22,7 @@ describe('LoginPage', () => {
             provide: NavController,
             useFactory: createNavControllerMock,
           },
+          { provide: SessionVaultService, useFactory: createSessionVaultServiceMock },
         ],
       }).compileComponents();
 
@@ -35,12 +37,21 @@ describe('LoginPage', () => {
   });
 
   describe('clicking the signin button', () => {
-    it('calls login', () => {
+    it('initializes the vault to the default unlock mode', fakeAsync(() => {
+      const vault = TestBed.inject(SessionVaultService);
+      const button = fixture.debugElement.query(By.css('[data-testid="signin-button"]'));
+      click(fixture, button.nativeElement);
+      tick();
+      expect(vault.initializeUnlockType).toHaveBeenCalledTimes(1);
+    }));
+
+    it('calls login', fakeAsync(() => {
       const auth = TestBed.inject(AuthenticationService);
       const button = fixture.debugElement.query(By.css('[data-testid="signin-button"]'));
-      click(button.nativeElement);
+      click(fixture, button.nativeElement);
+      tick();
       expect(auth.login).toHaveBeenCalledTimes(1);
-    });
+    }));
 
     describe('on success', () => {
       beforeEach(() => {
@@ -51,7 +62,7 @@ describe('LoginPage', () => {
       it('clears the error message', fakeAsync(() => {
         const button = fixture.debugElement.query(By.css('[data-testid="signin-button"]'));
         const msg = fixture.debugElement.query(By.css('[data-testid="error-message"]'));
-        click(button.nativeElement);
+        click(fixture, button.nativeElement);
         tick();
         fixture.detectChanges();
         expect(msg.nativeElement.textContent).toEqual('');
@@ -59,7 +70,7 @@ describe('LoginPage', () => {
 
       it('navigates to the root', fakeAsync(() => {
         const button = fixture.debugElement.query(By.css('[data-testid="signin-button"]'));
-        click(button.nativeElement);
+        click(fixture, button.nativeElement);
         tick();
         const navController = TestBed.inject(NavController);
         expect(navController.navigateRoot).toHaveBeenCalledTimes(1);
@@ -76,7 +87,7 @@ describe('LoginPage', () => {
       it('display a generic error message', fakeAsync(() => {
         const button = fixture.debugElement.query(By.css('[data-testid="signin-button"]'));
         const msg = fixture.debugElement.query(By.css('[data-testid="error-message"]'));
-        click(button.nativeElement);
+        click(fixture, button.nativeElement);
         tick();
         fixture.detectChanges();
         expect(msg.nativeElement.textContent).toEqual('Login failed. Please try again.');
@@ -84,17 +95,11 @@ describe('LoginPage', () => {
 
       it('does not navigate', fakeAsync(() => {
         const button = fixture.debugElement.query(By.css('[data-testid="signin-button"]'));
-        click(button.nativeElement);
+        click(fixture, button.nativeElement);
         tick();
         const navController = TestBed.inject(NavController);
         expect(navController.navigateRoot).not.toHaveBeenCalled();
       }));
     });
   });
-
-  const click = (button: HTMLElement) => {
-    const event = new Event('click');
-    button.dispatchEvent(event);
-    fixture.detectChanges();
-  };
 });
