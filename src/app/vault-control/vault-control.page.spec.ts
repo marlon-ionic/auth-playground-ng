@@ -3,8 +3,8 @@ import { By } from '@angular/platform-browser';
 import { SessionVaultService } from '@app/core';
 import { createSessionVaultServiceMock } from '@app/core/testing';
 import { SharedModule } from '@app/shared/shared.module';
-import { IonicModule, Platform } from '@ionic/angular';
-import { createPlatformMock } from '@test/mocks';
+import { IonicModule, NavController, Platform } from '@ionic/angular';
+import { createNavControllerMock, createPlatformMock } from '@test/mocks';
 import { click } from '@test/util';
 import { VaultControlPage } from './vault-control.page';
 
@@ -18,6 +18,7 @@ describe('VaultControlPage', () => {
         declarations: [VaultControlPage],
         imports: [IonicModule, SharedModule],
         providers: [
+          { provide: NavController, useFactory: createNavControllerMock },
           { provide: Platform, useFactory: createPlatformMock },
           { provide: SessionVaultService, useFactory: createSessionVaultServiceMock },
         ],

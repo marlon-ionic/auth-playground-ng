@@ -1,0 +1,67 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Device Information</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/vault-control"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Device Information</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list>
+    <ion-item>
+      <ion-label>Biometric Strength</ion-label>
+      <ion-note>{{biometricStrength}}</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>Secure Hardware</ion-label>
+      <ion-note>{{hasSecureHardware}}</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>Biometrics Supported</ion-label>
+      <ion-note>{{isBiometricsSupported}}</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>Biometrics Enabled</ion-label>
+      <ion-note>{{isBiometricsEnabled}}</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>Privacy Screen</ion-label>
+      <ion-note>{{isPrivacyScreenEnabled}}</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>System Passcode</ion-label>
+      <ion-note>{{isSystemPasscodeSet}}</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>Locked Out</ion-label>
+      <ion-note>{{isLockedOutOfBiometrics}}</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <ion-button expand="block" (click)="togglePrivacy()">Toggle Privacy Screen</ion-button>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <ion-button expand="block" [disabled]="!isBiometricsEnabled">Show Biometrics Prompt</ion-button>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+  <div>
+    <p>Available Biometric Hardware:</p>
+    <ul *ngIf="availableHardware?.length">
+      <li *ngFor="let h of availableHardware">{{h}}</li>
+    </ul>
+    <ul *ngIf="availableHardware?.length === 0">
+      <li>None</li>
+    </ul>
+  </div>
+</ion-content>

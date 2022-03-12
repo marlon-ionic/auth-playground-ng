@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { SessionVaultService } from '@app/core';
 import { Device, IdentityVaultConfig, VaultType } from '@ionic-enterprise/identity-vault';
-import { Platform } from '@ionic/angular';
+import { NavController, Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-vault-control',
@@ -15,7 +15,11 @@ export class VaultControlPage {
   disableLock = true;
   config: IdentityVaultConfig;
 
-  constructor(private platform: Platform, private sessionVault: SessionVaultService) {
+  constructor(
+    private navController: NavController,
+    private platform: Platform,
+    private sessionVault: SessionVaultService
+  ) {
     this.config = sessionVault.vault.config;
   }
 
@@ -54,5 +58,9 @@ export class VaultControlPage {
   neverLock() {
     this.disableLock = true;
     return this.sessionVault.setUnlockMode('NeverLock');
+  }
+
+  openDevicePage() {
+    this.navController.navigateForward(['/', 'tabs', 'vault-control', 'device-info']);
   }
 }
