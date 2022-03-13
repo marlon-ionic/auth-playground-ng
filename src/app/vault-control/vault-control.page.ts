@@ -63,4 +63,8 @@ export class VaultControlPage {
   openDevicePage() {
     this.navController.navigateForward(['/', 'tabs', 'vault-control', 'device-info']);
   }
+
+  openValuesPage() {
+    this.navController.navigateForward(['/', 'tabs', 'vault-control', 'value-list']);
+  }
 }

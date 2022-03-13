@@ -10,7 +10,6 @@ import { SessionVaultService } from '../session-vault/session-vault.service';
 })
 export class AuthenticationService extends IonicAuth {
   constructor(vaultService: SessionVaultService, platform: Platform) {
-    console.log('construct AC');
     const config = platform.is('hybrid') ? mobileAuthConfig : webAuthConfig;
     config.tokenStorageProvider = vaultService.vault;
     super(config);
