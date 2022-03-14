@@ -11,12 +11,14 @@ export const createOverlayElementMock = (name: string) =>
     present: Promise.resolve(),
   });
 
-export const createOverlayControllerMock = (name: string, element?: any) =>
-  jasmine.createSpyObj(name, {
-    create: Promise.resolve(element),
+export const createOverlayControllerMock = (name: string, element?: any) => {
+  const e = element || createOverlayElementMock('unknown');
+  return jasmine.createSpyObj(name, {
+    create: Promise.resolve(e),
     dismiss: undefined,
-    getTop: Promise.resolve(element),
+    getTop: Promise.resolve(e),
   });
+};
 
 export const createPlatformMock = () =>
   jasmine.createSpyObj<Platform>('Platform', {

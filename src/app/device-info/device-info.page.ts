@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Device } from '@ionic-enterprise/identity-vault';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-device-info',
@@ -16,7 +17,7 @@ export class DeviceInfoPage implements OnInit {
   isSystemPasscodeSet: boolean;
   availableHardware: Array<string>;
 
-  constructor() {}
+  constructor(private alertController: AlertController) {}
 
   async ngOnInit() {
     this.biometricStrength = await Device.getBiometricStrengthLevel();
@@ -32,5 +33,22 @@ export class DeviceInfoPage implements OnInit {
   async togglePrivacy() {
     await Device.setHideScreenOnBackground(!this.isPrivacyScreenEnabled);
     this.isPrivacyScreenEnabled = await Device.isHideScreenOnBackgroundEnabled();
+  }
+
+  async showBiometricPrompt() {
+    try {
+      await Device.showBiometricPrompt({ iosBiometricsLocalizedReason: 'This is only a test' });
+      this.displayBioResultAlert('Success!!');
+    } catch (error) {
+      this.displayBioResultAlert('Failed. User likely cancelled the operation.');
+    }
+  }
+
+  private async displayBioResultAlert(subHeader: string) {
+    const alert = await this.alertController.create({
+      header: 'Show Biometrics',
+      subHeader,
+    });
+    alert.present();
   }
 }
