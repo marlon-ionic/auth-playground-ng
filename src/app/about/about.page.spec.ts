@@ -1,7 +1,7 @@
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { AuthenticationService, SessionVaultService } from '@app/core';
-import { createAuthenticationServiceMock, createSessionVaultServiceMock } from '@app/core/testing';
+import { AuthenticationService } from '@app/core';
+import { createAuthenticationServiceMock } from '@app/core/testing';
 import { IonicModule, NavController } from '@ionic/angular';
 import { createNavControllerMock } from '@test/mocks';
 import { click } from '@test/util';
@@ -20,7 +20,6 @@ describe('AboutPage', () => {
         providers: [
           { provide: AuthenticationService, useFactory: createAuthenticationServiceMock },
           { provide: NavController, useFactory: createNavControllerMock },
-          { provide: SessionVaultService, useFactory: createSessionVaultServiceMock },
         ],
       }).compileComponents();
 
@@ -41,14 +40,6 @@ describe('AboutPage', () => {
       click(fixture, button.nativeElement);
       expect(auth.logout).toHaveBeenCalledTimes(1);
     });
-
-    it('clears the vault', fakeAsync(() => {
-      const sessionVault = TestBed.inject(SessionVaultService);
-      const button = fixture.debugElement.query(By.css('[data-testid="logout-button"]'));
-      click(fixture, button.nativeElement);
-      tick();
-      expect(sessionVault.vault.clear).toHaveBeenCalledTimes(1);
-    }));
 
     it('navigates to the login page', fakeAsync(() => {
       const button = fixture.debugElement.query(By.css('[data-testid="logout-button"]'));
