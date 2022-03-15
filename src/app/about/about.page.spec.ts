@@ -5,7 +5,6 @@ import { createAuthenticationServiceMock } from '@app/core/testing';
 import { IonicModule, NavController } from '@ionic/angular';
 import { createNavControllerMock } from '@test/mocks';
 import { click } from '@test/util';
-import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 import { AboutPage } from './about.page';
 
 describe('AboutPage', () => {
@@ -16,7 +15,7 @@ describe('AboutPage', () => {
     waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [AboutPage],
-        imports: [IonicModule, ExploreContainerComponentModule],
+        imports: [IonicModule],
         providers: [
           { provide: AuthenticationService, useFactory: createAuthenticationServiceMock },
           { provide: NavController, useFactory: createNavControllerMock },
