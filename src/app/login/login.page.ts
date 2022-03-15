@@ -19,8 +19,8 @@ export class LoginPage {
   async signIn(): Promise<void> {
     this.errorMessage = '';
     try {
-      await this.auth.login();
       await this.vault.initializeUnlockType();
+      await this.auth.login();
       this.navController.navigateRoot(['/']);
     } catch (err) {
       this.errorMessage = 'Login failed. Please try again.';

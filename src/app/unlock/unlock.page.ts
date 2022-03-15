@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { SessionVaultService } from '@app/core';
+import { AuthenticationService, SessionVaultService } from '@app/core';
 import { NavController } from '@ionic/angular';
 
 @Component({
@@ -8,14 +8,24 @@ import { NavController } from '@ionic/angular';
   styleUrls: ['./unlock.page.scss'],
 })
 export class UnlockPage {
-  constructor(private navController: NavController, private sessionVault: SessionVaultService) {}
+  constructor(
+    private authenticationService: AuthenticationService,
+    private navController: NavController,
+    private sessionVault: SessionVaultService
+  ) {}
 
   async unlock() {
     try {
       await this.sessionVault.vault.unlock();
       this.navController.navigateRoot(['/']);
-    } catch (error) {}
+    } catch (error) {
+      // you could alert or otherwise set an error message
+      // the most common failure is the user cancelling, so we just don't navigate
+    }
   }
 
-  redo() {}
+  async redo() {
+    await this.authenticationService.logout();
+    this.navController.navigateRoot(['/', 'login']);
+  }
 }
