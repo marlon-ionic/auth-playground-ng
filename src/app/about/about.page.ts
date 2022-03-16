@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationService } from '@app/core';
+import { AuthenticationExpeditorService } from '@app/core';
 import { NavController } from '@ionic/angular';
 import packageInfo from '../../../package.json';
 
@@ -15,7 +15,7 @@ export class AboutPage implements OnInit {
   authConnectVersion: string;
   identityVaultVersion: string;
 
-  constructor(private auth: AuthenticationService, private navController: NavController) {}
+  constructor(private auth: AuthenticationExpeditorService, private navController: NavController) {}
 
   ngOnInit() {
     this.author = packageInfo.author;

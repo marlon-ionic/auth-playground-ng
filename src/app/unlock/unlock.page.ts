@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthenticationService, SessionVaultService } from '@app/core';
+import { Component } from '@angular/core';
+import { AuthenticationExpeditorService, SessionVaultService } from '@app/core';
 import { NavController } from '@ionic/angular';
 
 @Component({
@@ -9,7 +9,7 @@ import { NavController } from '@ionic/angular';
 })
 export class UnlockPage {
   constructor(
-    private authenticationService: AuthenticationService,
+    private auth: AuthenticationExpeditorService,
     private navController: NavController,
     private sessionVault: SessionVaultService
   ) {}
@@ -25,7 +25,7 @@ export class UnlockPage {
   }
 
   async redo() {
-    await this.authenticationService.logout();
+    await this.auth.logout();
     this.navController.navigateRoot(['/', 'login']);
   }
 }

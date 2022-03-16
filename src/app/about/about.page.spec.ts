@@ -1,7 +1,7 @@
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { AuthenticationService } from '@app/core';
-import { createAuthenticationServiceMock } from '@app/core/testing';
+import { AuthenticationExpeditorService } from '@app/core';
+import { createAuthenticationExpeditorServiceMock } from '@app/core/testing';
 import { IonicModule, NavController } from '@ionic/angular';
 import { createNavControllerMock } from '@test/mocks';
 import { click } from '@test/util';
@@ -17,7 +17,7 @@ describe('AboutPage', () => {
         declarations: [AboutPage],
         imports: [IonicModule],
         providers: [
-          { provide: AuthenticationService, useFactory: createAuthenticationServiceMock },
+          { provide: AuthenticationExpeditorService, useFactory: createAuthenticationExpeditorServiceMock },
           { provide: NavController, useFactory: createNavControllerMock },
         ],
       }).compileComponents();
@@ -34,7 +34,7 @@ describe('AboutPage', () => {
 
   describe('clicking the logout button', () => {
     it('calls logout', () => {
-      const auth = TestBed.inject(AuthenticationService);
+      const auth = TestBed.inject(AuthenticationExpeditorService);
       const button = fixture.debugElement.query(By.css('[data-testid="logout-button"]'));
       click(fixture, button.nativeElement);
       expect(auth.logout).toHaveBeenCalledTimes(1);

@@ -41,9 +41,17 @@ We have gone beyond that with this application so we could allow the user to man
 
 **Important:** you may ask why we create methods like `unlock()` that just pass through to the vault's `unlock()`. The reason for this is to create an adaptor class layer to protect the rest of the application from potential changes to the Identity Vault API. Creating an adapter class is a good pattern to follow with any external dependency to your application.
 
-### The Authentication Service
+### The Authentication Services
 
-The `AuthenticationService` is how this application interfaces with Auth Connect in order to provide access to our AWS Cognito authentication provider. This service only needs to provide the proper configuration. You can override existing methods or add new ones if you need to provide more functionality.
+#### Authentication Expeditor Service
+
+The `AuthenticationExpeditorService` is a layer that allows us to use different methods for authentication, and then manages how the user is currently authenticated so the proper flows can be followed. The idea is to abstract all of the associated business logic of managing the provider to this layer.
+
+In an architecture that support only one provider (which is more typical), this layer is not necessary and you would directly use the single `AuthenticationService` instead. That is, you would likely have a single `AuthenticationService` that is similar to this application's `AwsAuthenticationService`, and you would directly use it instead.
+
+#### AWS Authentication Service
+
+The `AwsAuthenticationService` is how this application interfaces with Auth Connect in order to provide access to our AWS Cognito authentication provider. This service only needs to provide the proper configuration. You can override existing methods or add new ones if you need to provide more functionality.
 
 We also specify a token storage provider, using the `vault` object from our `SessionVaultService`. If you do not specify a token storage provider, Auth Connect will use a default provider that utilizes `localstorage`. The default provider, however, is only intended for development use. In a production scenario we suggest pairing Auth Connect with Identity Vault for a complete solution.
 

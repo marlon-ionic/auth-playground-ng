@@ -1,7 +1,7 @@
 import { ComponentFixture, fakeAsync, TestBed, TestComponentRenderer, tick, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { AuthenticationService, SessionVaultService } from '@app/core';
-import { createAuthenticationServiceMock, createSessionVaultServiceMock } from '@app/core/testing';
+import { AuthenticationExpeditorService, SessionVaultService } from '@app/core';
+import { createAuthenticationExpeditorServiceMock, createSessionVaultServiceMock } from '@app/core/testing';
 import { IonicModule, NavController } from '@ionic/angular';
 import { createNavControllerMock } from '@test/mocks';
 import { click } from '@test/util';
@@ -17,7 +17,7 @@ describe('LoginPage', () => {
         declarations: [LoginPage],
         imports: [IonicModule],
         providers: [
-          { provide: AuthenticationService, useFactory: createAuthenticationServiceMock },
+          { provide: AuthenticationExpeditorService, useFactory: createAuthenticationExpeditorServiceMock },
           {
             provide: NavController,
             useFactory: createNavControllerMock,
@@ -46,11 +46,12 @@ describe('LoginPage', () => {
     }));
 
     it('calls login', fakeAsync(() => {
-      const auth = TestBed.inject(AuthenticationService);
+      const auth = TestBed.inject(AuthenticationExpeditorService);
       const button = fixture.debugElement.query(By.css('[data-testid="signin-button"]'));
       click(fixture, button.nativeElement);
       tick();
       expect(auth.login).toHaveBeenCalledTimes(1);
+      expect(auth.login).toHaveBeenCalledWith('AWS');
     }));
 
     describe('on success', () => {
@@ -80,7 +81,7 @@ describe('LoginPage', () => {
 
     describe('on failure', () => {
       beforeEach(() => {
-        const auth = TestBed.inject(AuthenticationService);
+        const auth = TestBed.inject(AuthenticationExpeditorService);
         (auth.login as any).and.returnValue(Promise.reject(new Error('this shall not be')));
       });
 

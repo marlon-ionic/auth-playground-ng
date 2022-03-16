@@ -2,8 +2,8 @@ import { TestBed, inject } from '@angular/core/testing';
 import { NavController } from '@ionic/angular';
 
 import { AuthGuardService } from './auth-guard.service';
-import { AuthenticationService } from '@app/core';
-import { createAuthenticationServiceMock } from '@app/core/testing';
+import { AuthenticationExpeditorService } from '@app/core';
+import { createAuthenticationExpeditorServiceMock } from '@app/core/testing';
 import { createNavControllerMock } from '@test/mocks';
 
 describe('AuthGuardService', () => {
@@ -12,8 +12,8 @@ describe('AuthGuardService', () => {
       providers: [
         AuthGuardService,
         {
-          provide: AuthenticationService,
-          useFactory: createAuthenticationServiceMock,
+          provide: AuthenticationExpeditorService,
+          useFactory: createAuthenticationExpeditorServiceMock,
         },
         { provide: NavController, useFactory: createNavControllerMock },
       ],
@@ -26,10 +26,10 @@ describe('AuthGuardService', () => {
 
   describe('canActivate', () => {
     let guard: AuthGuardService;
-    let authenticationService: AuthenticationService;
+    let authenticationService: AuthenticationExpeditorService;
     beforeEach(() => {
       guard = TestBed.inject(AuthGuardService);
-      authenticationService = TestBed.inject(AuthenticationService);
+      authenticationService = TestBed.inject(AuthenticationExpeditorService);
     });
 
     describe('when the user is authenticated', () => {

@@ -7,7 +7,7 @@ import { SessionVaultService } from '../session-vault/session-vault.service';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthenticationService extends IonicAuth {
+export class AwsAuthenticationService extends IonicAuth {
   constructor(vaultService: SessionVaultService, platform: Platform) {
     const config = platform.is('hybrid') ? mobileAuthConfig : webAuthConfig;
     config.tokenStorageProvider = vaultService.vault;

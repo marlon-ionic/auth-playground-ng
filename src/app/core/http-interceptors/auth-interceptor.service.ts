@@ -1,18 +1,17 @@
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
-import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest } from '@angular/common/http';
-
-import { AuthenticationService } from '../authentication/authentication.service';
+import { AuthenticationExpeditorService } from '../authentication-expeditor/authentication-expeditor.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private authentication: AuthenticationService) {}
+  constructor(private auth: AuthenticationExpeditorService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return from(
       this.requestRequiresToken(req)
-        ? this.authentication.getAccessToken().then((token) => {
+        ? this.auth.getAccessToken().then((token) => {
             if (token) {
               req = req.clone({
                 setHeaders: {

@@ -1,7 +1,7 @@
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { AuthenticationService, SessionVaultService } from '@app/core';
-import { createAuthenticationServiceMock, createSessionVaultServiceMock } from '@app/core/testing';
+import { AuthenticationExpeditorService, SessionVaultService } from '@app/core';
+import { createAuthenticationExpeditorServiceMock, createSessionVaultServiceMock } from '@app/core/testing';
 import { IonicModule, NavController } from '@ionic/angular';
 import { createNavControllerMock } from '@test/mocks';
 import { click } from '@test/util';
@@ -17,7 +17,7 @@ describe('UnlockPage', () => {
         declarations: [UnlockPage],
         imports: [IonicModule],
         providers: [
-          { provide: AuthenticationService, useFactory: createAuthenticationServiceMock },
+          { provide: AuthenticationExpeditorService, useFactory: createAuthenticationExpeditorServiceMock },
           { provide: NavController, useFactory: createNavControllerMock },
           { provide: SessionVaultService, useFactory: createSessionVaultServiceMock },
         ],
@@ -65,7 +65,7 @@ describe('UnlockPage', () => {
 
   describe('the redo button', () => {
     it('performs a logout', () => {
-      const auth = TestBed.inject(AuthenticationService);
+      const auth = TestBed.inject(AuthenticationExpeditorService);
       const button = fixture.debugElement.query(By.css('[data-testid="redo-button"]'));
       click(fixture, button.nativeElement);
       expect(auth.logout).toHaveBeenCalledTimes(1);
