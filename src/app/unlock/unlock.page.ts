@@ -16,7 +16,7 @@ export class UnlockPage {
 
   async unlock() {
     try {
-      await this.sessionVault.vault.unlock();
+      await this.sessionVault.unlock();
       this.navController.navigateRoot(['/']);
     } catch (error) {
       // you could alert or otherwise set an error message

@@ -1,4 +1,4 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { PinDialogComponent } from '@app/pin-dialog/pin-dialog.component';
 import { Device, DeviceSecurityType, Vault, VaultType } from '@ionic-enterprise/identity-vault';
 import { ModalController, Platform } from '@ionic/angular';
@@ -17,10 +17,13 @@ describe('SessionVaultService', () => {
   beforeEach(() => {
     mockVault = jasmine.createSpyObj<Vault>('Vault', {
       clear: Promise.resolve(),
+      getKeys: Promise.resolve([]),
+      getValue: Promise.resolve(),
       isEmpty: Promise.resolve(false),
       isLocked: Promise.resolve(false),
       lock: Promise.resolve(),
       setCustomPasscode: Promise.resolve(),
+      setValue: Promise.resolve(),
       updateConfig: Promise.resolve(),
       unlock: Promise.resolve(),
       onLock: undefined,
@@ -55,7 +58,7 @@ describe('SessionVaultService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('setUnlockType', () => {
+  describe('setUnlockMode', () => {
     [
       {
         unlockMode: 'Device',
@@ -105,7 +108,7 @@ describe('SessionVaultService', () => {
           type: VaultType.CustomPasscode,
           deviceSecurityType: DeviceSecurityType.None,
         };
-        await service.initializeUnlockType();
+        await service.initializeUnlockMode();
         expect(mockVault.updateConfig).toHaveBeenCalledTimes(1);
         expect(mockVault.updateConfig).toHaveBeenCalledWith(expectedConfig);
       });
@@ -117,7 +120,7 @@ describe('SessionVaultService', () => {
           type: VaultType.DeviceSecurity,
           deviceSecurityType: DeviceSecurityType.Both,
         };
-        await service.initializeUnlockType();
+        await service.initializeUnlockMode();
         expect(mockVault.updateConfig).toHaveBeenCalledTimes(1);
         expect(mockVault.updateConfig).toHaveBeenCalledWith(expectedConfig);
       });
@@ -130,7 +133,7 @@ describe('SessionVaultService', () => {
       });
 
       it('does not update the config', async () => {
-        await service.initializeUnlockType();
+        await service.initializeUnlockMode();
         expect(mockVault.updateConfig).not.toHaveBeenCalled();
       });
     });
@@ -186,6 +189,50 @@ describe('SessionVaultService', () => {
       await onPassocodeRequestedCallback(false);
       expect(mockVault.setCustomPasscode).toHaveBeenCalledTimes(1);
       expect(mockVault.setCustomPasscode).toHaveBeenCalledWith('');
+    });
+  });
+
+  describe('clear', () => {
+    it('calls the vault clear', () => {
+      service.clear();
+      expect(mockVault.clear).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('get keys', () => {
+    it('calls the vault get keys', () => {
+      service.getKeys();
+      expect(mockVault.getKeys).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('get value', () => {
+    it('calls the vault get value', () => {
+      service.getValue('foo-key');
+      expect(mockVault.getValue).toHaveBeenCalledTimes(1);
+      expect(mockVault.getValue).toHaveBeenCalledWith('foo-key');
+    });
+  });
+
+  describe('lock', () => {
+    it('calls the vault lock', () => {
+      service.lock();
+      expect(mockVault.lock).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('set value', () => {
+    it('calls the vault set value', () => {
+      service.setValue('foo-key', 'some random value');
+      expect(mockVault.setValue).toHaveBeenCalledTimes(1);
+      expect(mockVault.setValue).toHaveBeenCalledWith('foo-key', 'some random value');
+    });
+  });
+
+  describe('unlock', () => {
+    it('calls the vault unlock', () => {
+      service.unlock();
+      expect(mockVault.unlock).toHaveBeenCalledTimes(1);
     });
   });
 });

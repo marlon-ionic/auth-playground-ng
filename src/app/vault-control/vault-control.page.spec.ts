@@ -74,13 +74,13 @@ describe('VaultControlPage', () => {
     it('locks the vault', () => {
       const button = fixture.debugElement.query(By.css('[data-testid="lock-vault-button"]'));
       click(fixture, button.nativeElement);
-      expect(sessionVault.vault.lock).toHaveBeenCalledTimes(1);
+      expect(sessionVault.lock).toHaveBeenCalledTimes(1);
     });
 
     it('clears the vault', () => {
       const button = fixture.debugElement.query(By.css('[data-testid="clear-vault-button"]'));
       click(fixture, button.nativeElement);
-      expect(sessionVault.vault.clear).toHaveBeenCalledTimes(1);
+      expect(sessionVault.clear).toHaveBeenCalledTimes(1);
     });
   });
 });

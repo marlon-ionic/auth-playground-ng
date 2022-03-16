@@ -42,7 +42,7 @@ describe('LoginPage', () => {
       const button = fixture.debugElement.query(By.css('[data-testid="signin-button"]'));
       click(fixture, button.nativeElement);
       tick();
-      expect(vault.initializeUnlockType).toHaveBeenCalledTimes(1);
+      expect(vault.initializeUnlockMode).toHaveBeenCalledTimes(1);
     }));
 
     it('calls login', fakeAsync(() => {

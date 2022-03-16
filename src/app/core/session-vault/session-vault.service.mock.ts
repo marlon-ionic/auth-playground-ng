@@ -29,8 +29,14 @@ export const createSessionVaultServiceMock = () => {
 
   const service = jasmine.createSpyObj<SessionVaultService>('SessionVaultService', {
     canUnlock: Promise.resolve(false),
-    initializeUnlockType: Promise.resolve(),
+    initializeUnlockMode: Promise.resolve(),
     setUnlockMode: Promise.resolve(),
+    clear: Promise.resolve(),
+    getKeys: Promise.resolve([]),
+    getValue: Promise.resolve(),
+    lock: Promise.resolve(),
+    setValue: Promise.resolve(),
+    unlock: Promise.resolve(),
   });
   service.vault = mockVault;
   (service as any).locked = new Subject();

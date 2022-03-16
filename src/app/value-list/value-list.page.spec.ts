@@ -29,10 +29,10 @@ describe('ValueListPage', () => {
       fixture = TestBed.createComponent(ValueListPage);
       component = fixture.componentInstance;
       const sessionVault = TestBed.inject(SessionVaultService);
-      (sessionVault.vault.getKeys as any).and.returnValue(Promise.resolve(['foo', 'bar', 'baz']));
-      (sessionVault.vault.getValue as any).withArgs('foo').and.returnValue(Promise.resolve('cat'));
-      (sessionVault.vault.getValue as any).withArgs('bar').and.returnValue(Promise.resolve('dog'));
-      (sessionVault.vault.getValue as any).withArgs('baz').and.returnValue(Promise.resolve('mouse'));
+      (sessionVault.getKeys as any).and.returnValue(Promise.resolve(['foo', 'bar', 'baz']));
+      (sessionVault.getValue as any).withArgs('foo').and.returnValue(Promise.resolve('cat'));
+      (sessionVault.getValue as any).withArgs('bar').and.returnValue(Promise.resolve('dog'));
+      (sessionVault.getValue as any).withArgs('baz').and.returnValue(Promise.resolve('mouse'));
       fixture.detectChanges();
     })
   );
@@ -43,7 +43,7 @@ describe('ValueListPage', () => {
 
   it('gets the keys', () => {
     const sessionVault = TestBed.inject(SessionVaultService);
-    expect(sessionVault.vault.getKeys).toHaveBeenCalledTimes(1);
+    expect(sessionVault.getKeys).toHaveBeenCalledTimes(1);
   });
 
   it('displays the keys in a list', () => {
@@ -89,8 +89,8 @@ describe('ValueListPage', () => {
       const button = fixture.debugElement.query(By.css('[data-testid="add-value-button'));
       click(fixture, button.nativeElement);
       tick();
-      expect(sessionVault.vault.setValue).toHaveBeenCalledTimes(1);
-      expect(sessionVault.vault.setValue).toHaveBeenCalledWith('foo', 'this is my foo data');
+      expect(sessionVault.setValue).toHaveBeenCalledTimes(1);
+      expect(sessionVault.setValue).toHaveBeenCalledWith('foo', 'this is my foo data');
     }));
 
     it('does nothing if cancel', fakeAsync(() => {
@@ -101,7 +101,7 @@ describe('ValueListPage', () => {
       const button = fixture.debugElement.query(By.css('[data-testid="add-value-button'));
       click(fixture, button.nativeElement);
       tick();
-      expect(sessionVault.vault.setValue).not.toHaveBeenCalled();
+      expect(sessionVault.setValue).not.toHaveBeenCalled();
     }));
 
     it('does nothing if no key', fakeAsync(() => {
@@ -112,7 +112,7 @@ describe('ValueListPage', () => {
       const button = fixture.debugElement.query(By.css('[data-testid="add-value-button'));
       click(fixture, button.nativeElement);
       tick();
-      expect(sessionVault.vault.setValue).not.toHaveBeenCalled();
+      expect(sessionVault.setValue).not.toHaveBeenCalled();
     }));
 
     it('does nothing if no value', fakeAsync(() => {
@@ -123,7 +123,7 @@ describe('ValueListPage', () => {
       const button = fixture.debugElement.query(By.css('[data-testid="add-value-button'));
       click(fixture, button.nativeElement);
       tick();
-      expect(sessionVault.vault.setValue).not.toHaveBeenCalled();
+      expect(sessionVault.setValue).not.toHaveBeenCalled();
     }));
   });
 });

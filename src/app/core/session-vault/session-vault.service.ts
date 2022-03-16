@@ -42,11 +42,35 @@ export class SessionVaultService {
     return this.lockedSubject.asObservable();
   }
 
+  clear(): Promise<void> {
+    return this.vault.clear();
+  }
+
+  getKeys(): Promise<Array<string>> {
+    return this.vault.getKeys();
+  }
+
+  getValue(key: string): Promise<any> {
+    return this.vault.getValue(key);
+  }
+
+  lock(): Promise<void> {
+    return this.vault.lock();
+  }
+
+  setValue(key: string, value: any): Promise<void> {
+    return this.vault.setValue(key, value);
+  }
+
+  unlock(): Promise<void> {
+    return this.vault.unlock();
+  }
+
   async canUnlock(): Promise<boolean> {
     return !(await this.vault.isEmpty()) && (await this.vault.isLocked());
   }
 
-  async initializeUnlockType() {
+  async initializeUnlockMode() {
     if (this.platform.is('hybrid')) {
       if (await Device.isSystemPasscodeSet()) {
         this.setUnlockMode('Device');

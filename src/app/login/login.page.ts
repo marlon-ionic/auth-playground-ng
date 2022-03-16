@@ -19,7 +19,7 @@ export class LoginPage {
   async signIn(): Promise<void> {
     this.errorMessage = '';
     try {
-      await this.vault.initializeUnlockType();
+      await this.vault.initializeUnlockMode();
       await this.auth.login();
       this.navController.navigateRoot(['/']);
     } catch (err) {

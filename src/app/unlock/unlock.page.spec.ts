@@ -1,11 +1,10 @@
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { AuthenticationService, AuthGuardService, SessionVaultService } from '@app/core';
+import { AuthenticationService, SessionVaultService } from '@app/core';
 import { createAuthenticationServiceMock, createSessionVaultServiceMock } from '@app/core/testing';
 import { IonicModule, NavController } from '@ionic/angular';
 import { createNavControllerMock } from '@test/mocks';
 import { click } from '@test/util';
-
 import { UnlockPage } from './unlock.page';
 
 describe('UnlockPage', () => {
@@ -39,7 +38,7 @@ describe('UnlockPage', () => {
       const sessionVault = TestBed.inject(SessionVaultService);
       const button = fixture.debugElement.query(By.css('[data-testid="unlock-button"]'));
       click(fixture, button.nativeElement);
-      expect(sessionVault.vault.unlock).toHaveBeenCalledTimes(1);
+      expect(sessionVault.unlock).toHaveBeenCalledTimes(1);
     });
 
     it('navigates to the root', fakeAsync(() => {
@@ -55,7 +54,7 @@ describe('UnlockPage', () => {
       it('does not navigate', fakeAsync(() => {
         const navController = TestBed.inject(NavController);
         const sessionVault = TestBed.inject(SessionVaultService);
-        (sessionVault.vault.unlock as any).and.returnValue(Promise.reject(new Error('whatever, dude')));
+        (sessionVault.unlock as any).and.returnValue(Promise.reject(new Error('whatever, dude')));
         const button = fixture.debugElement.query(By.css('[data-testid="unlock-button"]'));
         click(fixture, button.nativeElement);
         tick();

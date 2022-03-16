@@ -39,17 +39,17 @@ export class ValueListPage implements OnInit {
     await alert.present();
     const { data, role } = await alert.onDidDismiss();
     if (data.values && data.values.key && data.values.value && role !== 'cancel') {
-      await this.sessionVault.vault.setValue(data.values.key, data.values.value);
+      await this.sessionVault.setValue(data.values.key, data.values.value);
     }
     this.getValues();
   }
 
   private async getValues() {
-    const keys = await this.sessionVault.vault.getKeys();
+    const keys = await this.sessionVault.getKeys();
     this.values = await Promise.all(
       keys.map(async (key: string) => ({
         key,
-        value: JSON.stringify(await this.sessionVault.vault.getValue(key), undefined, 2),
+        value: JSON.stringify(await this.sessionVault.getValue(key), undefined, 2),
       }))
     );
   }

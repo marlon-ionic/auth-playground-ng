@@ -33,11 +33,11 @@ export class VaultControlPage {
   }
 
   clearVault() {
-    return this.sessionVault.vault.clear();
+    return this.sessionVault.clear();
   }
 
   lockVault() {
-    return this.sessionVault.vault.lock();
+    return this.sessionVault.lock();
   }
 
   useCustomPasscode() {
