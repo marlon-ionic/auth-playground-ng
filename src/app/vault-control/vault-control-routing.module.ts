@@ -9,11 +9,11 @@ const routes: Routes = [
   },
   {
     path: 'device-info',
-    loadChildren: () => import('../device-info/device-info.module').then((m) => m.DeviceInfoPageModule),
+    loadChildren: () => import('./device-info/device-info.module').then((m) => m.DeviceInfoPageModule),
   },
   {
     path: 'value-list',
-    loadChildren: () => import('../value-list/value-list.module').then((m) => m.ValueListPageModule),
+    loadChildren: () => import('./value-list/value-list.module').then((m) => m.ValueListPageModule),
   },
 ];
 

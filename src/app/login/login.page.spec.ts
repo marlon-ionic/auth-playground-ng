@@ -11,35 +11,33 @@ describe('LoginPage', () => {
   let component: LoginPage;
   let fixture: ComponentFixture<LoginPage>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [LoginPage],
-        imports: [IonicModule],
-        providers: [
-          { provide: AuthenticationExpeditorService, useFactory: createAuthenticationExpeditorServiceMock },
-          {
-            provide: NavController,
-            useFactory: createNavControllerMock,
-          },
-          { provide: SessionVaultService, useFactory: createSessionVaultServiceMock },
-        ],
-      }).compileComponents();
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [LoginPage],
+      imports: [IonicModule],
+      providers: [
+        { provide: AuthenticationExpeditorService, useFactory: createAuthenticationExpeditorServiceMock },
+        {
+          provide: NavController,
+          useFactory: createNavControllerMock,
+        },
+        { provide: SessionVaultService, useFactory: createSessionVaultServiceMock },
+      ],
+    }).compileComponents();
 
-      fixture = TestBed.createComponent(LoginPage);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-    })
-  );
+    fixture = TestBed.createComponent(LoginPage);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('clicking the signin button', () => {
+  describe('clicking the AWS signin button', () => {
     it('initializes the vault to the default unlock mode', fakeAsync(() => {
       const vault = TestBed.inject(SessionVaultService);
-      const button = fixture.debugElement.query(By.css('[data-testid="signin-button"]'));
+      const button = fixture.debugElement.query(By.css('[data-testid="aws-signin-button"]'));
       click(fixture, button.nativeElement);
       tick();
       expect(vault.initializeUnlockMode).toHaveBeenCalledTimes(1);
@@ -47,7 +45,7 @@ describe('LoginPage', () => {
 
     it('calls login', fakeAsync(() => {
       const auth = TestBed.inject(AuthenticationExpeditorService);
-      const button = fixture.debugElement.query(By.css('[data-testid="signin-button"]'));
+      const button = fixture.debugElement.query(By.css('[data-testid="aws-signin-button"]'));
       click(fixture, button.nativeElement);
       tick();
       expect(auth.login).toHaveBeenCalledTimes(1);
@@ -61,7 +59,7 @@ describe('LoginPage', () => {
       });
 
       it('clears the error message', fakeAsync(() => {
-        const button = fixture.debugElement.query(By.css('[data-testid="signin-button"]'));
+        const button = fixture.debugElement.query(By.css('[data-testid="aws-signin-button"]'));
         const msg = fixture.debugElement.query(By.css('[data-testid="error-message"]'));
         click(fixture, button.nativeElement);
         tick();
@@ -70,7 +68,7 @@ describe('LoginPage', () => {
       }));
 
       it('navigates to the root', fakeAsync(() => {
-        const button = fixture.debugElement.query(By.css('[data-testid="signin-button"]'));
+        const button = fixture.debugElement.query(By.css('[data-testid="aws-signin-button"]'));
         click(fixture, button.nativeElement);
         tick();
         const navController = TestBed.inject(NavController);
@@ -86,7 +84,7 @@ describe('LoginPage', () => {
       });
 
       it('display a generic error message', fakeAsync(() => {
-        const button = fixture.debugElement.query(By.css('[data-testid="signin-button"]'));
+        const button = fixture.debugElement.query(By.css('[data-testid="aws-signin-button"]'));
         const msg = fixture.debugElement.query(By.css('[data-testid="error-message"]'));
         click(fixture, button.nativeElement);
         tick();
@@ -95,7 +93,75 @@ describe('LoginPage', () => {
       }));
 
       it('does not navigate', fakeAsync(() => {
-        const button = fixture.debugElement.query(By.css('[data-testid="signin-button"]'));
+        const button = fixture.debugElement.query(By.css('[data-testid="aws-signin-button"]'));
+        click(fixture, button.nativeElement);
+        tick();
+        const navController = TestBed.inject(NavController);
+        expect(navController.navigateRoot).not.toHaveBeenCalled();
+      }));
+    });
+  });
+
+  describe('clicking the Azure signin button', () => {
+    it('initializes the vault to the default unlock mode', fakeAsync(() => {
+      const vault = TestBed.inject(SessionVaultService);
+      const button = fixture.debugElement.query(By.css('[data-testid="azure-signin-button"]'));
+      click(fixture, button.nativeElement);
+      tick();
+      expect(vault.initializeUnlockMode).toHaveBeenCalledTimes(1);
+    }));
+
+    it('calls login', fakeAsync(() => {
+      const auth = TestBed.inject(AuthenticationExpeditorService);
+      const button = fixture.debugElement.query(By.css('[data-testid="azure-signin-button"]'));
+      click(fixture, button.nativeElement);
+      tick();
+      expect(auth.login).toHaveBeenCalledTimes(1);
+      expect(auth.login).toHaveBeenCalledWith('Azure');
+    }));
+
+    describe('on success', () => {
+      beforeEach(() => {
+        component.errorMessage = 'I am in error';
+        fixture.detectChanges();
+      });
+
+      it('clears the error message', fakeAsync(() => {
+        const button = fixture.debugElement.query(By.css('[data-testid="azure-signin-button"]'));
+        const msg = fixture.debugElement.query(By.css('[data-testid="error-message"]'));
+        click(fixture, button.nativeElement);
+        tick();
+        fixture.detectChanges();
+        expect(msg.nativeElement.textContent).toEqual('');
+      }));
+
+      it('navigates to the root', fakeAsync(() => {
+        const button = fixture.debugElement.query(By.css('[data-testid="azure-signin-button"]'));
+        click(fixture, button.nativeElement);
+        tick();
+        const navController = TestBed.inject(NavController);
+        expect(navController.navigateRoot).toHaveBeenCalledTimes(1);
+        expect(navController.navigateRoot).toHaveBeenCalledWith(['/']);
+      }));
+    });
+
+    describe('on failure', () => {
+      beforeEach(() => {
+        const auth = TestBed.inject(AuthenticationExpeditorService);
+        (auth.login as any).and.returnValue(Promise.reject(new Error('this shall not be')));
+      });
+
+      it('display a generic error message', fakeAsync(() => {
+        const button = fixture.debugElement.query(By.css('[data-testid="azure-signin-button"]'));
+        const msg = fixture.debugElement.query(By.css('[data-testid="error-message"]'));
+        click(fixture, button.nativeElement);
+        tick();
+        fixture.detectChanges();
+        expect(msg.nativeElement.textContent).toEqual('Login failed. Please try again.');
+      }));
+
+      it('does not navigate', fakeAsync(() => {
+        const button = fixture.debugElement.query(By.css('[data-testid="azure-signin-button"]'));
         click(fixture, button.nativeElement);
         tick();
         const navController = TestBed.inject(NavController);

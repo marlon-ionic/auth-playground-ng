@@ -1,7 +1,12 @@
 <ion-content class="ion-text-center">
-  <div class="auth-button" (click)="signIn()" data-testid="signin-button">
-    <ion-icon name="log-in-outline"></ion-icon>
-    <div>Sign In</div>
+  <div class="auth-button" (click)="oidcSignIn('AWS')" data-testid="aws-signin-button">
+    <ion-icon name="logo-amazon"></ion-icon>
+    <div>Sign In with AWS</div>
+  </div>
+
+  <div class="auth-button" (click)="oidcSignIn('Azure')" data-testid="azure-signin-button">
+    <ion-icon name="logo-microsoft"></ion-icon>
+    <div>Sign In with Azure</div>
   </div>
 
   <div class="error-message" data-testid="error-message">

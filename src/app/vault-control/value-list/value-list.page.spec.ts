@@ -14,28 +14,26 @@ describe('ValueListPage', () => {
   let component: ValueListPage;
   let fixture: ComponentFixture<ValueListPage>;
 
-  beforeEach(
-    waitForAsync(() => {
-      alert = createOverlayElementMock('Alert');
-      TestBed.configureTestingModule({
-        declarations: [ValueListPage],
-        imports: [IonicModule, RouterTestingModule],
-        providers: [
-          { provide: AlertController, useFactory: () => createOverlayControllerMock('AlertController', alert) },
-          { provide: SessionVaultService, useFactory: createSessionVaultServiceMock },
-        ],
-      }).compileComponents();
+  beforeEach(waitForAsync(() => {
+    alert = createOverlayElementMock('Alert');
+    TestBed.configureTestingModule({
+      declarations: [ValueListPage],
+      imports: [IonicModule, RouterTestingModule],
+      providers: [
+        { provide: AlertController, useFactory: () => createOverlayControllerMock('AlertController', alert) },
+        { provide: SessionVaultService, useFactory: createSessionVaultServiceMock },
+      ],
+    }).compileComponents();
 
-      fixture = TestBed.createComponent(ValueListPage);
-      component = fixture.componentInstance;
-      const sessionVault = TestBed.inject(SessionVaultService);
-      (sessionVault.getKeys as any).and.returnValue(Promise.resolve(['foo', 'bar', 'baz']));
-      (sessionVault.getValue as any).withArgs('foo').and.returnValue(Promise.resolve('cat'));
-      (sessionVault.getValue as any).withArgs('bar').and.returnValue(Promise.resolve('dog'));
-      (sessionVault.getValue as any).withArgs('baz').and.returnValue(Promise.resolve('mouse'));
-      fixture.detectChanges();
-    })
-  );
+    fixture = TestBed.createComponent(ValueListPage);
+    component = fixture.componentInstance;
+    const sessionVault = TestBed.inject(SessionVaultService);
+    (sessionVault.getKeys as any).and.returnValue(Promise.resolve(['foo', 'bar', 'baz']));
+    (sessionVault.getValue as any).withArgs('foo').and.returnValue(Promise.resolve('cat'));
+    (sessionVault.getValue as any).withArgs('bar').and.returnValue(Promise.resolve('dog'));
+    (sessionVault.getValue as any).withArgs('baz').and.returnValue(Promise.resolve('mouse'));
+    fixture.detectChanges();
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();

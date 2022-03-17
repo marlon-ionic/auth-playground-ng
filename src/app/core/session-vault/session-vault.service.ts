@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { AuthProvider } from '@app/models';
 import { PinDialogComponent } from '@app/pin-dialog/pin-dialog.component';
 import { BrowserVault, Device, DeviceSecurityType, Vault, VaultType } from '@ionic-enterprise/identity-vault';
 import { ModalController, Platform } from '@ionic/angular';
@@ -68,6 +69,14 @@ export class SessionVaultService {
 
   async canUnlock(): Promise<boolean> {
     return !(await this.vault.isEmpty()) && (await this.vault.isLocked());
+  }
+
+  setAuthProvider(value: AuthProvider) {
+    return this.setValue('AuthProvider', value);
+  }
+
+  getAuthProvider(): Promise<AuthProvider | undefined | null> {
+    return this.getValue('AuthProvider');
   }
 
   async initializeUnlockMode() {

@@ -11,30 +11,28 @@ describe('DeviceInfoPage', () => {
   let component: DeviceInfoPage;
   let fixture: ComponentFixture<DeviceInfoPage>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [DeviceInfoPage],
-        imports: [IonicModule, RouterTestingModule],
-        providers: [{ provide: AlertController, useFactory: () => createOverlayControllerMock('AlertController') }],
-      }).compileComponents();
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [DeviceInfoPage],
+      imports: [IonicModule, RouterTestingModule],
+      providers: [{ provide: AlertController, useFactory: () => createOverlayControllerMock('AlertController') }],
+    }).compileComponents();
 
-      fixture = TestBed.createComponent(DeviceInfoPage);
-      component = fixture.componentInstance;
+    fixture = TestBed.createComponent(DeviceInfoPage);
+    component = fixture.componentInstance;
 
-      spyOn(Device, 'getBiometricStrengthLevel').and.returnValue(Promise.resolve(BiometricSecurityStrength.Strong));
-      spyOn(Device, 'hasSecureHardware').and.returnValue(Promise.resolve(true));
-      spyOn(Device, 'isBiometricsEnabled').and.returnValue(Promise.resolve(false));
-      spyOn(Device, 'isBiometricsSupported').and.returnValue(Promise.resolve(true));
-      spyOn(Device, 'isHideScreenOnBackgroundEnabled').and.returnValue(Promise.resolve(true));
-      spyOn(Device, 'isLockedOutOfBiometrics').and.returnValue(Promise.resolve(false));
-      spyOn(Device, 'isSystemPasscodeSet').and.returnValue(Promise.resolve(true));
-      spyOn(Device, 'getAvailableHardware').and.returnValue(Promise.resolve([SupportedBiometricType.Face]));
-      spyOn(Device, 'setHideScreenOnBackground').and.returnValue(Promise.resolve());
+    spyOn(Device, 'getBiometricStrengthLevel').and.returnValue(Promise.resolve(BiometricSecurityStrength.Strong));
+    spyOn(Device, 'hasSecureHardware').and.returnValue(Promise.resolve(true));
+    spyOn(Device, 'isBiometricsEnabled').and.returnValue(Promise.resolve(false));
+    spyOn(Device, 'isBiometricsSupported').and.returnValue(Promise.resolve(true));
+    spyOn(Device, 'isHideScreenOnBackgroundEnabled').and.returnValue(Promise.resolve(true));
+    spyOn(Device, 'isLockedOutOfBiometrics').and.returnValue(Promise.resolve(false));
+    spyOn(Device, 'isSystemPasscodeSet').and.returnValue(Promise.resolve(true));
+    spyOn(Device, 'getAvailableHardware').and.returnValue(Promise.resolve([SupportedBiometricType.Face]));
+    spyOn(Device, 'setHideScreenOnBackground').and.returnValue(Promise.resolve());
 
-      fixture.detectChanges();
-    })
-  );
+    fixture.detectChanges();
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();

@@ -53,7 +53,13 @@ In an architecture that support only one provider (which is more typical), this 
 
 The `AwsAuthenticationService` is how this application interfaces with Auth Connect in order to provide access to our AWS Cognito authentication provider. This service only needs to provide the proper configuration. You can override existing methods or add new ones if you need to provide more functionality.
 
-We also specify a token storage provider, using the `vault` object from our `SessionVaultService`. If you do not specify a token storage provider, Auth Connect will use a default provider that utilizes `localstorage`. The default provider, however, is only intended for development use. In a production scenario we suggest pairing Auth Connect with Identity Vault for a complete solution.
+#### Azure Authentication Service
+
+The `AzureAuthenticationService` is how this application interfaces with Auth Connect in order to provide access to our Azure Active Directory authentication provider. This service provides the proper configuration as well as overrides the `login()` method due to some peculiarities with how a password change needs to be handled with Azure.
+
+#### The Token Storage Provider
+
+With the OIDC related services, we also specify a token storage provider, using the `vault` object from our `SessionVaultService`. If you do not specify a token storage provider, Auth Connect will use a default provider that utilizes `localstorage`. The default provider, however, is only intended for development use. In a production scenario we suggest pairing Auth Connect with Identity Vault for a complete solution.
 
 ### The PIN Dialog
 

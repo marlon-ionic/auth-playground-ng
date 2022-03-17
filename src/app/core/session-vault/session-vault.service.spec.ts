@@ -235,4 +235,19 @@ describe('SessionVaultService', () => {
       expect(mockVault.unlock).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('setAuthProvider', () => {
+    it('sets the auth provider value in the vault', () => {
+      service.setAuthProvider('AWS');
+      expect(mockVault.setValue).toHaveBeenCalledTimes(1);
+      expect(mockVault.setValue).toHaveBeenCalledWith('AuthProvider', 'AWS');
+    });
+  });
+
+  describe('getAuthProvider', () => {
+    it('resolves the set auth provider', async () => {
+      (mockVault.getValue as any).withArgs('AuthProvider').and.returnValue(Promise.resolve('Azure'));
+      expect(await service.getAuthProvider()).toEqual('Azure');
+    });
+  });
 });
