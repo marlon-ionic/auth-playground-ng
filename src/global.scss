@@ -25,6 +25,8 @@
 @import '~@ionic/angular/css/text-transformation.css';
 @import '~@ionic/angular/css/flex-utils.css';
 
+@import './theme/custom-colors.scss';
+
 .error-message {
   padding: 2em;
   color: var(--ion-color-danger, #ff0000);
@@ -68,12 +70,6 @@ ion-select::part(icon) {
 
 ion-select::part(text) {
   margin-right: 1em;
-}
-
-.auth-button {
-  margin-top: 3em;
-  font-size: xx-large;
-  cursor: pointer;
 }
 
 dd {

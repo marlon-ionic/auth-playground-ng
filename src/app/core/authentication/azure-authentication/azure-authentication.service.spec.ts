@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { Platform } from '@ionic/angular';
 import { createPlatformMock } from '@test/mocks';
-import { SessionVaultService } from '../session-vault/session-vault.service';
-import { createSessionVaultServiceMock } from '../testing';
+import { SessionVaultService } from '../../session-vault/session-vault.service';
+import { createSessionVaultServiceMock } from '../../testing';
 import { AzureAuthenticationService } from './azure-authentication.service';
 
 describe('AzureAuthenticationService', () => {

@@ -9,13 +9,26 @@ import { NavController } from '@ionic/angular';
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage {
+  email: string;
   errorMessage: string;
+  password: string;
 
   constructor(
     private auth: AuthenticationExpeditorService,
     private navController: NavController,
     private vault: SessionVaultService
   ) {}
+
+  async basicSignIn(): Promise<void> {
+    this.errorMessage = '';
+    try {
+      await this.vault.initializeUnlockMode();
+      await this.auth.login('Basic', { email: this.email, password: this.password });
+      this.navController.navigateRoot(['/']);
+    } catch (err) {
+      this.errorMessage = 'Login failed. Please try again.';
+    }
+  }
 
   async oidcSignIn(provider: AuthProvider): Promise<void> {
     this.errorMessage = '';

@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { mobileAzureConfig, webAzureConfig } from '@env/environment';
 import { IonicAuth } from '@ionic-enterprise/auth';
 import { Platform } from '@ionic/angular';
-import { SessionVaultService } from '../session-vault/session-vault.service';
+import { SessionVaultService } from '../../session-vault/session-vault.service';
+import { Authenticator } from '../authenticator';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AzureAuthenticationService extends IonicAuth {
+export class AzureAuthenticationService extends IonicAuth implements Authenticator {
   constructor(vaultService: SessionVaultService, platform: Platform) {
     const config = platform.is('hybrid') ? mobileAzureConfig : webAzureConfig;
     config.tokenStorageProvider = vaultService.vault;
