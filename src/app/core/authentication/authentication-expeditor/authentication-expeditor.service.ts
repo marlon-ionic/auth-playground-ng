@@ -5,12 +5,14 @@ import { AzureAuthenticationService } from '../azure-authentication/azure-authen
 import { BasicAuthenticationService } from '../basic-authentication/basic-authentication.service';
 import { SessionVaultService } from '../../session-vault/session-vault.service';
 import { Authenticator } from '../authenticator';
+import { Auth0AuthenticationService } from '../auth0-authentication/auth0-authentication.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthenticationExpeditorService {
   constructor(
+    private auth0: Auth0AuthenticationService,
     private aws: AwsAuthenticationService,
     private azure: AzureAuthenticationService,
     private basic: BasicAuthenticationService,
@@ -56,6 +58,9 @@ export class AuthenticationExpeditorService {
 
   private getAuthService(provider: AuthProvider): Authenticator | null {
     switch (provider) {
+      case 'Auth0':
+        return this.auth0;
+
       case 'AWS':
         return this.aws;
 

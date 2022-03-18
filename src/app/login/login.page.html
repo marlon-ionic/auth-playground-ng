@@ -57,6 +57,14 @@
 
       <div class="auth-button-area">
         <div>--OR--</div>
+        <ion-button expand="block" color="auth0" (click)="oidcSignIn('Auth0')" data-testid="atuh0-signin-button">
+          <ion-icon slot="end" src="assets/auth0-logo.svg"></ion-icon>
+          Sign In with Auth0</ion-button
+        >
+      </div>
+
+      <div class="auth-button-area">
+        <div>--OR--</div>
         <ion-button expand="block" color="aws" (click)="oidcSignIn('AWS')" data-testid="aws-signin-button">
           <ion-icon slot="end" name="logo-amazon"></ion-icon>
           Sign In with AWS</ion-button

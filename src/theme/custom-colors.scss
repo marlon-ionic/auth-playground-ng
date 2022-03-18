@@ -1,4 +1,11 @@
 :root {
+  --ion-color-auth0: #000;
+  --ion-color-auth0-rgb: 0, 0, 0;
+  --ion-color-auth0-contrast: #fff;
+  --ion-color-auth0-contrast-rgb: 255, 255, 255;
+  --ion-color-auth0-shade: #2222;
+  --ion-color-auth0-tint: #333;
+
   --ion-color-aws: #ff9900;
   --ion-color-aws-rgb: 255, 153, 0;
   --ion-color-aws-contrast: #000000;
@@ -12,6 +19,15 @@
   --ion-color-azure-contrast-rgb: 255, 255, 255;
   --ion-color-azure-shade: #0070e0;
   --ion-color-azure-tint: #1a8cff;
+}
+
+.ion-color-auth0 {
+  --ion-color-base: var(--ion-color-auth0);
+  --ion-color-base-rgb: var(--ion-color-auth0-rgb);
+  --ion-color-contrast: var(--ion-color-auth0-contrast);
+  --ion-color-contrast-rgb: var(--ion-color-auth0-contrast-rgb);
+  --ion-color-shade: var(--ion-color-auth0-shade);
+  --ion-color-tint: var(--ion-color-auth0-tint);
 }
 
 .ion-color-aws {

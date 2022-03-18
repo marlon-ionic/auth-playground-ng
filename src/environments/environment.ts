@@ -1,5 +1,30 @@
 import { IonicAuthOptions } from '@ionic-enterprise/auth';
 
+const auth0Config: IonicAuthOptions = {
+  audience: '',
+  authConfig: 'auth0' as 'auth0',
+  clientID: 'yLasZNUGkZ19DGEjTmAITBfGXzqbvd00',
+  discoveryUrl: 'https://dev-2uspt-sz.us.auth0.com/.well-known/openid-configuration',
+  logoutUrl: '',
+  scope: 'openid email picture profile',
+  logLevel: 'DEBUG',
+};
+
+export const mobileAuth0Config: IonicAuthOptions = {
+  ...auth0Config,
+  redirectUri: 'msauth://login',
+  logoutUrl: 'msauth://login',
+  platform: 'capacitor',
+  iosWebView: 'private',
+};
+
+export const webAuth0Config: IonicAuthOptions = {
+  ...auth0Config,
+  redirectUri: 'http://localhost:8100/login',
+  logoutUrl: 'http://localhost:8100/login',
+  platform: 'web',
+};
+
 const awsConfig = {
   authConfig: 'cognito' as 'cognito',
   clientID: '4geagm2idmq87fii15dq9toild',
@@ -50,5 +75,5 @@ export const webAzureConfig: IonicAuthOptions = {
 
 export const environment = {
   production: false,
-  dataService: 'https://cs-demo-api.herokuapp.com',
+  dataService: 'http://localhost:7301', //'https://cs-demo-api.herokuapp.com',
 };
