@@ -75,5 +75,5 @@ export const webAzureConfig: IonicAuthOptions = {
 
 export const environment = {
   production: false,
-  dataService: 'http://localhost:7301', //'https://cs-demo-api.herokuapp.com',
+  dataService: 'https://cs-demo-api.herokuapp.com',
 };
