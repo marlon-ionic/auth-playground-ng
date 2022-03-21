@@ -82,9 +82,9 @@ export class SessionVaultService {
   async initializeUnlockMode() {
     if (this.platform.is('hybrid')) {
       if (await Device.isSystemPasscodeSet()) {
-        this.setUnlockMode('Device');
+        await this.setUnlockMode('Device');
       } else {
-        this.setUnlockMode('SessionPIN');
+        await this.setUnlockMode('SessionPIN');
       }
     }
   }

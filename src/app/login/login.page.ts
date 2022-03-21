@@ -22,8 +22,8 @@ export class LoginPage {
   async basicSignIn(): Promise<void> {
     this.errorMessage = '';
     try {
-      await this.vault.initializeUnlockMode();
       await this.auth.login('Basic', { email: this.email, password: this.password });
+      await this.vault.initializeUnlockMode();
       this.navController.navigateRoot(['/']);
     } catch (err) {
       this.errorMessage = 'Login failed. Please try again.';
@@ -33,8 +33,8 @@ export class LoginPage {
   async oidcSignIn(provider: AuthProvider): Promise<void> {
     this.errorMessage = '';
     try {
-      await this.vault.initializeUnlockMode();
       await this.auth.login(provider);
+      await this.vault.initializeUnlockMode();
       this.navController.navigateRoot(['/']);
     } catch (err) {
       this.errorMessage = 'Login failed. Please try again.';
