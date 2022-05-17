@@ -11,7 +11,8 @@ describe('SessionVaultService', () => {
   let service: SessionVaultService;
 
   let onLockCallback: () => void;
-  let onPassocodeRequestedCallback: (flag: boolean) => Promise<void>;
+
+  let onPasscodeRequestedCallback: (flag: boolean) => Promise<void>;
   let mockVault: Vault;
 
   beforeEach(() => {
@@ -32,9 +33,14 @@ describe('SessionVaultService', () => {
     });
     (mockVault.onLock as any).and.callFake((callback: () => void) => (onLockCallback = callback));
     (mockVault.onPasscodeRequested as any).and.callFake(
-      (callback: (flag: boolean) => Promise<void>) => (onPassocodeRequestedCallback = callback)
+      (callback: (flag: boolean) => Promise<void>) => (onPasscodeRequestedCallback = callback)
     );
     (mockVault.lock as any).and.callFake(() => onLockCallback());
+    mockVault.config = {
+      key: 'test',
+      type: VaultType.SecureStorage,
+      deviceSecurityType: DeviceSecurityType.None,
+    };
     modal = createOverlayElementMock('Modal');
     TestBed.configureTestingModule({
       providers: [
@@ -154,14 +160,15 @@ describe('SessionVaultService', () => {
   });
 
   describe('onPasscodeRequested', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       (modal.onDidDismiss as any).and.returnValue(Promise.resolve({ role: 'cancel' }));
+      await service.getValue('just-do-this-to-init-the-vault');
     });
 
     [true, false].forEach((setPasscode) => {
       it(`creates a PIN dialog, setting passcode: ${setPasscode}`, async () => {
         const modalController = TestBed.inject(ModalController);
-        await onPassocodeRequestedCallback(setPasscode);
+        await onPasscodeRequestedCallback(setPasscode);
         expect(modalController.create).toHaveBeenCalledTimes(1);
         expect(modalController.create).toHaveBeenCalledWith({
           backdropDismiss: false,
@@ -174,71 +181,70 @@ describe('SessionVaultService', () => {
     });
 
     it('presents the modal', async () => {
-      await onPassocodeRequestedCallback(false);
+      await onPasscodeRequestedCallback(false);
       expect(modal.present).toHaveBeenCalledTimes(1);
     });
 
     it('sets the custom passcode to the PIN', async () => {
       (modal.onDidDismiss as any).and.returnValue(Promise.resolve({ data: '4203', role: 'OK' }));
-      await onPassocodeRequestedCallback(false);
+      await onPasscodeRequestedCallback(false);
       expect(mockVault.setCustomPasscode).toHaveBeenCalledTimes(1);
       expect(mockVault.setCustomPasscode).toHaveBeenCalledWith('4203');
     });
 
     it('sets the custom passcode to and empty string if the PIN is undefined', async () => {
-      await onPassocodeRequestedCallback(false);
+      await onPasscodeRequestedCallback(false);
       expect(mockVault.setCustomPasscode).toHaveBeenCalledTimes(1);
       expect(mockVault.setCustomPasscode).toHaveBeenCalledWith('');
     });
   });
 
-  describe('clear', () => {
-    it('calls the vault clear', () => {
-      service.clear();
-      expect(mockVault.clear).toHaveBeenCalledTimes(1);
+  describe('getConfig', () => {
+    it('resolves the config', async () => {
+      expect(await service.getConfig()).toEqual(mockVault.config);
     });
   });
 
   describe('get keys', () => {
-    it('calls the vault get keys', () => {
-      service.getKeys();
+    it('calls the vault get keys', async () => {
+      await service.getKeys();
       expect(mockVault.getKeys).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('get value', () => {
-    it('calls the vault get value', () => {
-      service.getValue('foo-key');
+    it('calls the vault get value', async () => {
+      await service.getValue('foo-key');
       expect(mockVault.getValue).toHaveBeenCalledTimes(1);
       expect(mockVault.getValue).toHaveBeenCalledWith('foo-key');
     });
   });
 
   describe('lock', () => {
-    it('calls the vault lock', () => {
-      service.lock();
+    it('calls the vault lock', async () => {
+      await service.lock();
       expect(mockVault.lock).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('set value', () => {
-    it('calls the vault set value', () => {
-      service.setValue('foo-key', 'some random value');
+    it('calls the vault set value', async () => {
+      await service.setValue('foo-key', 'some random value');
       expect(mockVault.setValue).toHaveBeenCalledTimes(1);
       expect(mockVault.setValue).toHaveBeenCalledWith('foo-key', 'some random value');
     });
   });
 
   describe('unlock', () => {
-    it('calls the vault unlock', () => {
-      service.unlock();
+    it('calls the vault unlock', async () => {
+      await service.unlock();
       expect(mockVault.unlock).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('setAuthProvider', () => {
-    it('sets the auth provider value in the vault', () => {
-      service.setAuthProvider('AWS');
+    it('sets the auth provider value in the vault', async () => {
+      await service.setAuthProvider('AWS');
       expect(mockVault.setValue).toHaveBeenCalledTimes(1);
       expect(mockVault.setValue).toHaveBeenCalledWith('AuthProvider', 'AWS');
     });
@@ -248,6 +254,122 @@ describe('SessionVaultService', () => {
     it('resolves the set auth provider', async () => {
       (mockVault.getValue as any).withArgs('AuthProvider').and.returnValue(Promise.resolve('Azure'));
       expect(await service.getAuthProvider()).toEqual('Azure');
+    });
+  });
+
+  describe('token storage provider methods', () => {
+    describe('clear', () => {
+      it('calls the vault clear', async () => {
+        await service.clear();
+        expect(mockVault.clear).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('getAccessToken', () => {
+      describe('without a token name', () => {
+        it('gets the access token using the "AccessToken" key', async () => {
+          await service.getAccessToken();
+          expect(mockVault.getValue).toHaveBeenCalledTimes(1);
+          expect(mockVault.getValue).toHaveBeenCalledWith('AccessToken');
+        });
+
+        it('resolves the access token', async () => {
+          (mockVault.getValue as any).withArgs('AccessToken').and.returnValue(Promise.resolve('my-access-token'));
+          expect(await service.getAccessToken()).toEqual('my-access-token');
+        });
+      });
+
+      describe('with a token name', () => {
+        it('gets the access token using the "AccessToken" plus token name', async () => {
+          await service.getAccessToken('FooBar');
+          expect(mockVault.getValue).toHaveBeenCalledTimes(1);
+          expect(mockVault.getValue).toHaveBeenCalledWith('AccessTokenFooBar');
+        });
+
+        it('resolves the access token', async () => {
+          (mockVault.getValue as any).withArgs('AccessTokenFooBar').and.returnValue(Promise.resolve('my-access-token'));
+          expect(await service.getAccessToken('FooBar')).toEqual('my-access-token');
+        });
+      });
+    });
+
+    describe('getAuthResponse', () => {
+      it('gets the auth response using the "AuthResponse" key', async () => {
+        await service.getAuthResponse();
+        expect(mockVault.getValue).toHaveBeenCalledTimes(1);
+        expect(mockVault.getValue).toHaveBeenCalledWith('AuthResponse');
+      });
+
+      it('resolves the auth response', async () => {
+        (mockVault.getValue as any)
+          .withArgs('AuthResponse')
+          .and.returnValue(Promise.resolve({ foo: 'bar', bar: 'foo', baz: 'qux' }));
+        expect(await service.getAuthResponse()).toEqual({ foo: 'bar', bar: 'foo', baz: 'qux' });
+      });
+    });
+
+    describe('getIdToken', () => {
+      it('gets the id token using the "IdToken" key', async () => {
+        await service.getIdToken();
+        expect(mockVault.getValue).toHaveBeenCalledTimes(1);
+        expect(mockVault.getValue).toHaveBeenCalledWith('IdToken');
+      });
+
+      it('resolves the id token', async () => {
+        (mockVault.getValue as any).withArgs('IdToken').and.returnValue(Promise.resolve('my-id-token'));
+        expect(await service.getIdToken()).toEqual('my-id-token');
+      });
+    });
+
+    describe('getRefreshToken', () => {
+      it('gets the refresh token using the "RefreshToken" key', async () => {
+        await service.getRefreshToken();
+        expect(mockVault.getValue).toHaveBeenCalledTimes(1);
+        expect(mockVault.getValue).toHaveBeenCalledWith('RefreshToken');
+      });
+
+      it('resolves the refresh token', async () => {
+        (mockVault.getValue as any).withArgs('RefreshToken').and.returnValue(Promise.resolve('my-refresh-token'));
+        expect(await service.getRefreshToken()).toEqual('my-refresh-token');
+      });
+    });
+
+    describe('setAccessToken', () => {
+      it('sets the access token using the "AccessToken" key', async () => {
+        await service.setAccessToken('some-access-token');
+        expect(mockVault.setValue).toHaveBeenCalledTimes(1);
+        expect(mockVault.setValue).toHaveBeenCalledWith('AccessToken', 'some-access-token');
+      });
+
+      it('appends the tokenName when specified', async () => {
+        await service.setAccessToken('some-access-token', 'FooBar');
+        expect(mockVault.setValue).toHaveBeenCalledTimes(1);
+        expect(mockVault.setValue).toHaveBeenCalledWith('AccessTokenFooBar', 'some-access-token');
+      });
+    });
+
+    describe('setAuthResponse', () => {
+      it('sets the auth response using "AuthResponse" key', async () => {
+        await service.setAuthResponse({ foo: 'bar', baz: 'qux' });
+        expect(mockVault.setValue).toHaveBeenCalledTimes(1);
+        expect(mockVault.setValue).toHaveBeenCalledWith('AuthResponse', { foo: 'bar', baz: 'qux' });
+      });
+    });
+
+    describe('setIdToken', () => {
+      it('sets the id token using "IdToken" key', async () => {
+        await service.setIdToken('some-id-token');
+        expect(mockVault.setValue).toHaveBeenCalledTimes(1);
+        expect(mockVault.setValue).toHaveBeenCalledWith('IdToken', 'some-id-token');
+      });
+    });
+
+    describe('setRefreshToken', () => {
+      it('sets the refresh token using "RefreshToken" key', async () => {
+        await service.setRefreshToken('some-refresh-token');
+        expect(mockVault.setValue).toHaveBeenCalledTimes(1);
+        expect(mockVault.setValue).toHaveBeenCalledWith('RefreshToken', 'some-refresh-token');
+      });
     });
   });
 });

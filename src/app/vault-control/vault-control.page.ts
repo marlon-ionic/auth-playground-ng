@@ -19,15 +19,14 @@ export class VaultControlPage {
     private navController: NavController,
     private platform: Platform,
     private sessionVault: SessionVaultService
-  ) {
-    this.config = sessionVault.vault.config;
-  }
+  ) {}
 
   async ionViewDidEnter() {
+    this.config = await this.sessionVault.getConfig();
     if (this.platform.is('hybrid')) {
       this.disableCustomPasscode = false;
       this.disableInMemory = false;
-      this.disableLock = this.sessionVault.vault.config.type === VaultType.SecureStorage;
+      this.disableLock = this.config.type === VaultType.SecureStorage;
       this.disableDeviceUnlock = !(await Device.isSystemPasscodeSet());
     }
   }
