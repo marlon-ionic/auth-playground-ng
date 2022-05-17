@@ -72,6 +72,11 @@ describe('SessionVaultService', () => {
         deviceSecurityType: DeviceSecurityType.Both,
       },
       {
+        unlockMode: 'SystemPIN',
+        type: VaultType.DeviceSecurity,
+        deviceSecurityType: DeviceSecurityType.SystemPasscode,
+      },
+      {
         unlockMode: 'SessionPIN',
         type: VaultType.CustomPasscode,
         deviceSecurityType: DeviceSecurityType.None,
@@ -119,12 +124,26 @@ describe('SessionVaultService', () => {
         expect(mockVault.updateConfig).toHaveBeenCalledWith(expectedConfig);
       });
 
-      it('uses device security if a system PIN is set', async () => {
+      it('uses device security if a system PIN is set and biometrics is enabled', async () => {
         spyOn(Device, 'isSystemPasscodeSet').and.returnValue(Promise.resolve(true));
+        spyOn(Device, 'isBiometricsEnabled').and.returnValue(Promise.resolve(true));
         const expectedConfig = {
           ...mockVault.config,
           type: VaultType.DeviceSecurity,
           deviceSecurityType: DeviceSecurityType.Both,
+        };
+        await service.initializeUnlockMode();
+        expect(mockVault.updateConfig).toHaveBeenCalledTimes(1);
+        expect(mockVault.updateConfig).toHaveBeenCalledWith(expectedConfig);
+      });
+
+      it('uses system PIN if a system PIN is set and biometrics is not enabled', async () => {
+        spyOn(Device, 'isSystemPasscodeSet').and.returnValue(Promise.resolve(true));
+        spyOn(Device, 'isBiometricsEnabled').and.returnValue(Promise.resolve(false));
+        const expectedConfig = {
+          ...mockVault.config,
+          type: VaultType.DeviceSecurity,
+          deviceSecurityType: DeviceSecurityType.SystemPasscode,
         };
         await service.initializeUnlockMode();
         expect(mockVault.updateConfig).toHaveBeenCalledTimes(1);

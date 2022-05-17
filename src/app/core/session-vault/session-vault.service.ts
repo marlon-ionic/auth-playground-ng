@@ -13,7 +13,7 @@ import { ModalController, Platform } from '@ionic/angular';
 import { Observable, Subject } from 'rxjs';
 import { VaultFactoryService } from './vault-factory.service';
 
-export type UnlockMode = 'Device' | 'SessionPIN' | 'NeverLock' | 'ForceLogin';
+export type UnlockMode = 'Device' | 'SystemPIN' | 'SessionPIN' | 'NeverLock' | 'ForceLogin';
 
 @Injectable({
   providedIn: 'root',
@@ -82,7 +82,11 @@ export class SessionVaultService {
   async initializeUnlockMode() {
     if (this.platform.is('hybrid')) {
       if (await Device.isSystemPasscodeSet()) {
-        await this.setUnlockMode('Device');
+        if (await Device.isBiometricsEnabled()) {
+          await this.setUnlockMode('Device');
+        } else {
+          await this.setUnlockMode('SystemPIN');
+        }
       } else {
         await this.setUnlockMode('SessionPIN');
       }
@@ -99,6 +103,11 @@ export class SessionVaultService {
       case 'Device':
         type = VaultType.DeviceSecurity;
         deviceSecurityType = DeviceSecurityType.Both;
+        break;
+
+      case 'SystemPIN':
+        type = VaultType.DeviceSecurity;
+        deviceSecurityType = DeviceSecurityType.SystemPasscode;
         break;
 
       case 'SessionPIN':

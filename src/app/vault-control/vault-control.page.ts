@@ -44,6 +44,11 @@ export class VaultControlPage {
     return this.sessionVault.setUnlockMode('SessionPIN');
   }
 
+  useSystemPasscode() {
+    this.disableLock = false;
+    return this.sessionVault.setUnlockMode('SystemPIN');
+  }
+
   useDevice() {
     this.disableLock = false;
     return this.sessionVault.setUnlockMode('Device');
