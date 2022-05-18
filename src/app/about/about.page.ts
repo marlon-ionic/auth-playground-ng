@@ -30,8 +30,8 @@ export class AboutPage implements OnInit {
   }
 
   async logout(): Promise<void> {
-    await this.auth.logout();
     await this.vault.setUnlockMode('NeverLock');
+    await this.auth.logout();
     this.navController.navigateRoot(['/', 'login']);
   }
 }
