@@ -6,6 +6,7 @@ import {
   Device,
   DeviceSecurityType,
   IdentityVaultConfig,
+  SupportedBiometricType,
   Vault,
   VaultType,
 } from '@ionic-enterprise/identity-vault';
@@ -261,10 +262,11 @@ export class SessionVaultService {
 
   private async needsProvisioning(): Promise<boolean> {
     await this.init();
-    if (!this.platform.is('ios')) {
-      return false;
+    if (this.platform.is('ios') && (await Device.getAvailableHardware()).includes(SupportedBiometricType.Face)) {
+      return !(await this.preferencesVault.getValue('Provisioned'));
     }
-    return !(await this.preferencesVault.getValue('Provisioned'));
+
+    return false;
   }
 
   private async setLastUnlockMode(value: UnlockMode): Promise<void> {
