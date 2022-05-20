@@ -84,7 +84,6 @@ export class SessionVaultService {
   async initializeUnlockMode() {
     if (this.platform.is('hybrid')) {
       if (await Device.isSystemPasscodeSet()) {
-        await this.provision();
         if (await Device.isBiometricsEnabled()) {
           await this.setUnlockMode('Device');
         } else {
@@ -104,6 +103,7 @@ export class SessionVaultService {
 
     switch (unlockMode) {
       case 'Device':
+        await this.provision();
         type = VaultType.DeviceSecurity;
         deviceSecurityType = DeviceSecurityType.Both;
         break;
