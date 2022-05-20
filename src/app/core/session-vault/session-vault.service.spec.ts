@@ -14,9 +14,10 @@ describe('SessionVaultService', () => {
 
   let onPasscodeRequestedCallback: (flag: boolean) => Promise<void>;
   let mockVault: Vault;
+  let preferencesVault: Vault;
 
   beforeEach(() => {
-    mockVault = jasmine.createSpyObj<Vault>('Vault', {
+    const vaultObject = {
       clear: Promise.resolve(),
       getKeys: Promise.resolve([]),
       getValue: Promise.resolve(),
@@ -30,7 +31,9 @@ describe('SessionVaultService', () => {
       onLock: undefined,
       onUnlock: undefined,
       onPasscodeRequested: undefined,
-    });
+    };
+    preferencesVault = jasmine.createSpyObj<Vault>('PreferencesVault', vaultObject);
+    mockVault = jasmine.createSpyObj<Vault>('Vault', vaultObject);
     (mockVault.onLock as any).and.callFake((callback: () => void) => (onLockCallback = callback));
     (mockVault.onPasscodeRequested as any).and.callFake(
       (callback: (flag: boolean) => Promise<void>) => (onPasscodeRequestedCallback = callback)
@@ -58,6 +61,13 @@ describe('SessionVaultService', () => {
       ],
     });
     service = TestBed.inject(SessionVaultService);
+    const factory = TestBed.inject(VaultFactoryService);
+    (factory.create as any)
+      .withArgs({
+        key: 'io.ionic.auth-playground-ng-preferences',
+        type: VaultType.SecureStorage,
+      })
+      .and.returnValue(preferencesVault);
   });
 
   it('should be created', () => {
@@ -101,6 +111,8 @@ describe('SessionVaultService', () => {
         await service.setUnlockMode(unlockMode as UnlockMode);
         expect(mockVault.updateConfig).toHaveBeenCalledTimes(1);
         expect(mockVault.updateConfig).toHaveBeenCalledWith(expectedConfig);
+        expect(preferencesVault.setValue).toHaveBeenCalledTimes(1);
+        expect(preferencesVault.setValue).toHaveBeenCalledWith('LastUnlockMode', unlockMode);
       })
     );
   });
@@ -176,6 +188,24 @@ describe('SessionVaultService', () => {
         expect(await service.canUnlock()).toBe(!empty && locked);
       })
     );
+
+    describe('when "NeverLock"', () => {
+      beforeEach(() => {
+        (preferencesVault.getValue as any).withArgs('LastUnlockMode').and.returnValue(Promise.resolve('NeverLock'));
+      });
+
+      [
+        { empty: false, locked: true },
+        { empty: true, locked: true },
+        { empty: false, locked: false },
+      ].forEach(({ empty, locked }) =>
+        it(`is ${empty && locked} for ${empty} ${locked}`, async () => {
+          (mockVault.isEmpty as any).and.returnValue(Promise.resolve(empty));
+          (mockVault.isLocked as any).and.returnValue(Promise.resolve(locked));
+          expect(await service.canUnlock()).toBe(false);
+        })
+      );
+    });
   });
 
   describe('onPasscodeRequested', () => {

@@ -22,6 +22,7 @@ export class SessionVaultService {
   private lockedSubject: Subject<boolean>;
   private onLockCallback: () => void;
   private vault: Vault | BrowserVault;
+  private preferencesVault: Vault | BrowserVault;
   private vaultReady: Promise<void>;
 
   constructor(
@@ -68,7 +69,7 @@ export class SessionVaultService {
 
   async canUnlock(): Promise<boolean> {
     await this.init();
-    return !(await this.vault.isEmpty()) && (await this.vault.isLocked());
+    return !(await this.neverLock()) && !(await this.vault.isEmpty()) && (await this.vault.isLocked());
   }
 
   setAuthProvider(value: AuthProvider): Promise<void> {
@@ -82,6 +83,7 @@ export class SessionVaultService {
   async initializeUnlockMode() {
     if (this.platform.is('hybrid')) {
       if (await Device.isSystemPasscodeSet()) {
+        await this.provision();
         if (await Device.isBiometricsEnabled()) {
           await this.setUnlockMode('Device');
         } else {
@@ -129,6 +131,8 @@ export class SessionVaultService {
         type = VaultType.SecureStorage;
         deviceSecurityType = DeviceSecurityType.None;
     }
+
+    this.setLastUnlockMode(unlockMode);
 
     return this.vault.updateConfig({
       ...this.vault.config,
@@ -192,6 +196,11 @@ export class SessionVaultService {
       this.vaultReady = new Promise(async (resolve) => {
         await this.platform.ready();
 
+        this.preferencesVault = this.vaultFactory.create({
+          key: 'io.ionic.auth-playground-ng-preferences',
+          type: VaultType.SecureStorage,
+        });
+
         this.vault = this.vaultFactory.create({
           key: 'io.ionic.auth-playground-ng',
           type: VaultType.SecureStorage,
@@ -232,5 +241,40 @@ export class SessionVaultService {
     dlg.present();
     const { data } = await dlg.onDidDismiss();
     this.vault.setCustomPasscode(data || '');
+  }
+
+  // Preference Related Methods
+  private async provision(): Promise<void> {
+    await this.init();
+    if (await this.needsProvisioning()) {
+      try {
+        await Device.showBiometricPrompt({ iosBiometricsLocalizedReason: 'Please authenticate to continue' });
+      } catch (error) {}
+      await this.setProvisioned();
+    }
+  }
+
+  private async setProvisioned(): Promise<void> {
+    await this.init();
+    await this.preferencesVault.setValue('Provisioned', true);
+  }
+
+  private async needsProvisioning(): Promise<boolean> {
+    await this.init();
+    if (!this.platform.is('ios')) {
+      return false;
+    }
+    return !(await this.preferencesVault.getValue('Provisioned'));
+  }
+
+  private async setLastUnlockMode(value: UnlockMode): Promise<void> {
+    await this.init();
+    return this.preferencesVault.setValue('LastUnlockMode', value);
+  }
+
+  private async neverLock(): Promise<boolean> {
+    await this.init();
+    const lockMode = await this.preferencesVault.getValue('LastUnlockMode');
+    return lockMode === 'NeverLock';
   }
 }
