@@ -163,7 +163,7 @@ describe('SessionVaultService', () => {
       });
     });
 
-    describe('on mobile', () => {
+    describe('on web', () => {
       beforeEach(() => {
         const platform = TestBed.inject(Platform);
         (platform.is as any).withArgs('hybrid').and.returnValue(false);
