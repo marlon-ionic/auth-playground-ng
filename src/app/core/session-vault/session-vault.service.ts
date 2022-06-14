@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AuthProvider } from '@app/models';
 import { PinDialogComponent } from '@app/pin-dialog/pin-dialog.component';
 import {
+  BiometricPermissionState,
   BrowserVault,
   Device,
   DeviceSecurityType,
@@ -244,31 +245,16 @@ export class SessionVaultService {
     this.vault.setCustomPasscode(data || '');
   }
 
-  // Preference Related Methods
   private async provision(): Promise<void> {
     await this.init();
-    if (await this.needsProvisioning()) {
+    if ((await Device.isBiometricsAllowed()) === BiometricPermissionState.Prompt) {
       try {
         await Device.showBiometricPrompt({ iosBiometricsLocalizedReason: 'Please authenticate to continue' });
       } catch (error) {}
-      await this.setProvisioned();
     }
   }
 
-  private async setProvisioned(): Promise<void> {
-    await this.init();
-    await this.preferencesVault.setValue('Provisioned', true);
-  }
-
-  private async needsProvisioning(): Promise<boolean> {
-    await this.init();
-    if (this.platform.is('ios') && (await Device.getAvailableHardware()).includes(SupportedBiometricType.Face)) {
-      return !(await this.preferencesVault.getValue('Provisioned'));
-    }
-
-    return false;
-  }
-
+  // Preference Related Methods
   private async setLastUnlockMode(value: UnlockMode): Promise<void> {
     await this.init();
     return this.preferencesVault.setValue('LastUnlockMode', value);

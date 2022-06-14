@@ -1,6 +1,12 @@
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, TestBed } from '@angular/core/testing';
 import { PinDialogComponent } from '@app/pin-dialog/pin-dialog.component';
-import { Device, DeviceSecurityType, Vault, VaultType } from '@ionic-enterprise/identity-vault';
+import {
+  BiometricPermissionState,
+  Device,
+  DeviceSecurityType,
+  Vault,
+  VaultType,
+} from '@ionic-enterprise/identity-vault';
 import { ModalController, Platform } from '@ionic/angular';
 import { createOverlayControllerMock, createOverlayElementMock, createPlatformMock } from '@test/mocks';
 import { SessionVaultService, UnlockMode } from './session-vault.service';
@@ -75,6 +81,32 @@ describe('SessionVaultService', () => {
   });
 
   describe('setUnlockMode', () => {
+    describe('Device security', () => {
+      it('shows a bio prompt if provisioning the permission is required', async () => {
+        spyOn(Device, 'isBiometricsAllowed').and.returnValue(Promise.resolve(BiometricPermissionState.Prompt));
+        spyOn(Device, 'showBiometricPrompt');
+        await service.setUnlockMode('Device');
+        expect(Device.showBiometricPrompt).toHaveBeenCalledTimes(1);
+        expect(Device.showBiometricPrompt).toHaveBeenCalledWith({
+          iosBiometricsLocalizedReason: 'Please authenticate to continue',
+        });
+      });
+
+      it('does not show a bio prompt if the permission has already been granted', async () => {
+        spyOn(Device, 'isBiometricsAllowed').and.returnValue(Promise.resolve(BiometricPermissionState.Granted));
+        spyOn(Device, 'showBiometricPrompt');
+        await service.setUnlockMode('Device');
+        expect(Device.showBiometricPrompt).not.toHaveBeenCalled();
+      });
+
+      it('does not show a bio prompt if the permission has already been denied', async () => {
+        spyOn(Device, 'isBiometricsAllowed').and.returnValue(Promise.resolve(BiometricPermissionState.Denied));
+        spyOn(Device, 'showBiometricPrompt');
+        await service.setUnlockMode('Device');
+        expect(Device.showBiometricPrompt).not.toHaveBeenCalled();
+      });
+    });
+
     [
       {
         unlockMode: 'Device',
