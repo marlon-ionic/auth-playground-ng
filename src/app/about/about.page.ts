@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthenticationExpeditorService } from '@app/core';
+import { AuthenticationExpeditorService, SessionVaultService } from '@app/core';
 import { NavController } from '@ionic/angular';
 import packageInfo from '../../../package.json';
 
@@ -15,7 +15,11 @@ export class AboutPage implements OnInit {
   authConnectVersion: string;
   identityVaultVersion: string;
 
-  constructor(private auth: AuthenticationExpeditorService, private navController: NavController) {}
+  constructor(
+    private auth: AuthenticationExpeditorService,
+    private navController: NavController,
+    private vault: SessionVaultService
+  ) {}
 
   ngOnInit() {
     this.author = packageInfo.author;
@@ -26,6 +30,7 @@ export class AboutPage implements OnInit {
   }
 
   async logout(): Promise<void> {
+    await this.vault.setUnlockMode('NeverLock');
     await this.auth.logout();
     this.navController.navigateRoot(['/', 'login']);
   }

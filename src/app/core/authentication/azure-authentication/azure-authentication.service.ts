@@ -11,7 +11,7 @@ import { Authenticator } from '../authenticator';
 export class AzureAuthenticationService extends IonicAuth implements Authenticator {
   constructor(vaultService: SessionVaultService, platform: Platform) {
     const config = platform.is('hybrid') ? mobileAzureConfig : webAzureConfig;
-    config.tokenStorageProvider = vaultService.vault;
+    config.tokenStorageProvider = vaultService;
     super(config);
   }
 

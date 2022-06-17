@@ -12,23 +12,21 @@ describe('VaultControlPage', () => {
   let component: VaultControlPage;
   let fixture: ComponentFixture<VaultControlPage>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        declarations: [VaultControlPage],
-        imports: [IonicModule, SharedModule],
-        providers: [
-          { provide: NavController, useFactory: createNavControllerMock },
-          { provide: Platform, useFactory: createPlatformMock },
-          { provide: SessionVaultService, useFactory: createSessionVaultServiceMock },
-        ],
-      }).compileComponents();
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      declarations: [VaultControlPage],
+      imports: [IonicModule, SharedModule],
+      providers: [
+        { provide: NavController, useFactory: createNavControllerMock },
+        { provide: Platform, useFactory: createPlatformMock },
+        { provide: SessionVaultService, useFactory: createSessionVaultServiceMock },
+      ],
+    }).compileComponents();
 
-      fixture = TestBed.createComponent(VaultControlPage);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-    })
-  );
+    fixture = TestBed.createComponent(VaultControlPage);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  }));
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -48,6 +46,13 @@ describe('VaultControlPage', () => {
       click(fixture, button.nativeElement);
       expect(sessionVault.setUnlockMode).toHaveBeenCalledTimes(1);
       expect(sessionVault.setUnlockMode).toHaveBeenCalledWith('Device');
+    });
+
+    it('sets the system passcode type', () => {
+      const button = fixture.debugElement.query(By.css('[data-testid="use-system-passcode-button"]'));
+      click(fixture, button.nativeElement);
+      expect(sessionVault.setUnlockMode).toHaveBeenCalledTimes(1);
+      expect(sessionVault.setUnlockMode).toHaveBeenCalledWith('SystemPIN');
     });
 
     it('sets the custom passcode type', () => {

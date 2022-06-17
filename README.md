@@ -57,6 +57,16 @@ The `AwsAuthenticationService` is how this application interfaces with Auth Conn
 
 The `AzureAuthenticationService` is how this application interfaces with Auth Connect in order to provide access to our Azure Active Directory authentication provider. This service provides the proper configuration as well as overrides the `login()` method due to some peculiarities with how a password change needs to be handled with Azure.
 
+#### Basic Authentication Service
+
+The `BasicAuthenticationService` is used to perform a basic HTTP based authentication where the application itself gathers the credentials and then sends them to the backend to be verified and a token is returned. This is easily the least secure of all of the methods presented because:
+
+- The application obtains the credentials instead of the backend system performing the authentication.
+- As a result, those credentials are sent across the wire to the backend that will do the authentication.
+- The protocol we have implemented has a single long-lived token rather than short lived tokens with a long lived refresh token.
+
+Obviously, some of this we could do some work to get around. However, the fact that the user stays in the app in order to enter their credentials is a serious flaw that would take more work to get around. This makes using Auth Connect with the OIDC providers a far better choice for applications where security is important.
+
 #### The Token Storage Provider
 
 With the OIDC related services, we also specify a token storage provider, using the `vault` object from our `SessionVaultService`. If you do not specify a token storage provider, Auth Connect will use a default provider that utilizes `localstorage`. The default provider, however, is only intended for development use. In a production scenario we suggest pairing Auth Connect with Identity Vault for a complete solution.
@@ -111,10 +121,12 @@ The Unauth interceptor examines HTTP responses and redirects to the login page w
 
 ### Login Page
 
-The login page allows the user to authenticate themselves via our AWS Cognito provider. In order to log in, use the following credentials:
+The login page allows the user to authenticate themselves via any of our providers. The AWS provider as well as the "Sign in with email" option use the following credentials:
 
 - **email:** `test@ionic.io`
 - **password:** `Ion54321`
+
+The Azure OIDC provider may work with your Google account.
 
 This page will automatically be displayed whenever the application detects that the user is not currently authenticated.
 
