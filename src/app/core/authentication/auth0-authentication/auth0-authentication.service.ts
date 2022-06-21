@@ -11,7 +11,7 @@ import { Authenticator } from '../authenticator';
 export class Auth0AuthenticationService extends IonicAuth implements Authenticator {
   constructor(vaultService: SessionVaultService, platform: Platform) {
     const config = platform.is('hybrid') ? mobileAuth0Config : webAuth0Config;
-    config.tokenStorageProvider = vaultService.vault;
+    config.tokenStorageProvider = vaultService;
     super(config);
   }
 }
