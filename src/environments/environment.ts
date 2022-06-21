@@ -1,7 +1,8 @@
 import { IonicAuthOptions } from '@ionic-enterprise/auth';
 
 const auth0Config: IonicAuthOptions = {
-  audience: '',
+  // audience value is required for auth0's config. If it doesn't exist, the jwt payload will be empty
+  audience: 'https://io.ionic.demo.ac',
   authConfig: 'auth0' as 'auth0',
   clientID: 'yLasZNUGkZ19DGEjTmAITBfGXzqbvd00',
   discoveryUrl: 'https://dev-2uspt-sz.us.auth0.com/.well-known/openid-configuration',
