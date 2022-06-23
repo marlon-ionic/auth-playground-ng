@@ -1,5 +1,31 @@
 import { IonicAuthOptions } from '@ionic-enterprise/auth';
 
+const auth0Config: IonicAuthOptions = {
+  // audience value is required for auth0's config. If it doesn't exist, the jwt payload will be empty
+  audience: 'https://io.ionic.demo.ac',
+  authConfig: 'auth0' as 'auth0',
+  clientID: 'yLasZNUGkZ19DGEjTmAITBfGXzqbvd00',
+  discoveryUrl: 'https://dev-2uspt-sz.us.auth0.com/.well-known/openid-configuration',
+  logoutUrl: '',
+  scope: 'openid email picture profile',
+  logLevel: 'DEBUG',
+};
+
+export const mobileAuth0Config: IonicAuthOptions = {
+  ...auth0Config,
+  redirectUri: 'msauth://login',
+  logoutUrl: 'msauth://login',
+  platform: 'capacitor',
+  iosWebView: 'private',
+};
+
+export const webAuth0Config: IonicAuthOptions = {
+  ...auth0Config,
+  redirectUri: 'http://localhost:8100/login',
+  logoutUrl: 'http://localhost:8100/login',
+  platform: 'web',
+};
+
 const awsConfig = {
   authConfig: 'cognito' as 'cognito',
   clientID: '4geagm2idmq87fii15dq9toild',

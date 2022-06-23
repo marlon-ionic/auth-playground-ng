@@ -1,1 +1,1 @@
-export type AuthProvider = 'AWS' | 'Azure' | 'Basic';
+export type AuthProvider = 'Auth0' | 'AWS' | 'Azure' | 'Basic';

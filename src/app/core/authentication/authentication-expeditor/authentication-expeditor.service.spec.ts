@@ -8,6 +8,8 @@ import { createBasicAuthenticationServiceMock } from '../basic-authentication/ba
 import { SessionVaultService } from '../../session-vault/session-vault.service';
 import { createSessionVaultServiceMock } from '../../testing';
 import { AuthenticationExpeditorService } from './authentication-expeditor.service';
+import { Auth0AuthenticationService } from '../auth0-authentication/auth0-authentication.service';
+import { createAuth0AuthenticationServiceMock } from '../auth0-authentication/auth0-authentication.service.mock';
 
 describe('AuthenticationExpeditorService', () => {
   let service: AuthenticationExpeditorService;
@@ -15,6 +17,7 @@ describe('AuthenticationExpeditorService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        { provide: Auth0AuthenticationService, useFactory: createAuth0AuthenticationServiceMock },
         { provide: AwsAuthenticationService, useFactory: createAwsAuthenticationServiceMock },
         { provide: AzureAuthenticationService, useFactory: createAzureAuthenticationServiceMock },
         { provide: BasicAuthenticationService, useFactory: createBasicAuthenticationServiceMock },
@@ -26,6 +29,52 @@ describe('AuthenticationExpeditorService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  describe('when using Auth0', () => {
+    beforeEach(() => {
+      const vault = TestBed.inject(SessionVaultService);
+      (vault.getAuthProvider as any).and.returnValue(Promise.resolve('Auth0'));
+    });
+
+    describe('login', () => {
+      it('calls the Auth0 login', async () => {
+        const aws = TestBed.inject(Auth0AuthenticationService);
+        await service.login('Auth0');
+        expect(aws.login).toHaveBeenCalledTimes(1);
+      });
+
+      it('saves the auth provider', async () => {
+        const vault = TestBed.inject(SessionVaultService);
+        await service.login('Auth0');
+        expect(vault.setAuthProvider).toHaveBeenCalledTimes(1);
+        expect(vault.setAuthProvider).toHaveBeenCalledWith('Auth0');
+      });
+    });
+
+    describe('logout', () => {
+      it('calls the Auth0 logout', async () => {
+        const aws = TestBed.inject(Auth0AuthenticationService);
+        await service.logout();
+        expect(aws.logout).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('get access token', () => {
+      it('gets the Auth0 access token', async () => {
+        const aws = TestBed.inject(Auth0AuthenticationService);
+        await service.getAccessToken();
+        expect(aws.getAccessToken).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    describe('is authenticated', () => {
+      it('checks with Auth0 if the user is authenticated', async () => {
+        const aws = TestBed.inject(Auth0AuthenticationService);
+        await service.isAuthenticated();
+        expect(aws.isAuthenticated).toHaveBeenCalledTimes(1);
+      });
+    });
   });
 
   describe('when using AWS', () => {
