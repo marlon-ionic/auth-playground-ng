@@ -1,13 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuardService } from '@app/core';
+import { SetupVaultGuard } from '@app/setup-vault/setup-vault.guard';
 import { TabsPage } from './tabs.page';
 
 const routes: Routes = [
   {
     path: '',
     component: TabsPage,
-    canActivate: [AuthGuardService],
+    canActivate: [SetupVaultGuard, AuthGuardService],
     children: [
       {
         path: 'tea-list',

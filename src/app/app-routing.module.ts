@@ -18,6 +18,10 @@ const routes: Routes = [
     path: 'unlock',
     loadChildren: () => import('./unlock/unlock.module').then((m) => m.UnlockPageModule),
   },
+  {
+    path: 'setup-vault',
+    loadChildren: () => import('./setup-vault/setup-vault.module').then((m) => m.SetupVaultPageModule),
+  },
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })],

@@ -134,9 +134,9 @@ export class SessionVaultService {
         deviceSecurityType = DeviceSecurityType.None;
     }
 
-    this.setLastUnlockMode(unlockMode);
+    await this.setLastUnlockMode(unlockMode);
 
-    return this.vault.updateConfig({
+    return await this.vault.updateConfig({
       ...this.vault.config,
       type,
       deviceSecurityType,

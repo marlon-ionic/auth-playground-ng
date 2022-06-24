@@ -32,5 +32,20 @@
       <ion-label>Identity Vault</ion-label>
       <ion-note slot="end">{{identityVaultVersion}}</ion-note>
     </ion-item>
+    <ion-radio-group value="userSecurityPreference">
+      <ion-list-header>
+        <ion-label>Security Settings</ion-label>
+      </ion-list-header>
+
+      <ion-item>
+        <ion-label>Device Biometrics</ion-label>
+        <ion-radio slot="start" value="device"></ion-radio>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Custom Passcode</ion-label>
+        <ion-radio slot="start" value="passcode"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
   </ion-list>
 </ion-content>
