@@ -32,19 +32,19 @@
       <ion-label>Identity Vault</ion-label>
       <ion-note slot="end">{{identityVaultVersion}}</ion-note>
     </ion-item>
-    <ion-radio-group value="userSecurityPreference">
+    <ion-radio-group [ngModel]="userSecurityPreference" (ionChange)="changeVault($event)">
       <ion-list-header>
         <ion-label>Security Settings</ion-label>
       </ion-list-header>
 
       <ion-item>
         <ion-label>Device Biometrics</ion-label>
-        <ion-radio slot="start" value="device"></ion-radio>
+        <ion-radio slot="start" value="Device"></ion-radio>
       </ion-item>
 
       <ion-item>
         <ion-label>Custom Passcode</ion-label>
-        <ion-radio slot="start" value="passcode"></ion-radio>
+        <ion-radio slot="start" value="SessionPIN"></ion-radio>
       </ion-item>
     </ion-radio-group>
   </ion-list>

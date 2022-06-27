@@ -2,7 +2,7 @@
   <h1>Security Setup</h1>
   <p>Please choose your security settings to continue</p>
 
-  <ion-card *ngIf="isBiometricsSupported">
+  <ion-card *ngIf="settingsService.isBiometricsSupported$ | async as isBiometricsSupported">
     <ion-card-header>
       <ion-card-title>Biometrics are supported for your device</ion-card-title>
       <ion-card-subtitle
@@ -14,8 +14,10 @@
       Using your device's Biometric (Face ID, Fingerprint) is the most secure way to proceed
     </ion-card-content>
     <ion-icon class="xl" name="finger-print"></ion-icon>
-    <ion-button [disabled]="!isBiometricsEnabled" (click)="setupVault('Biometrics')">Use Device Biometrics</ion-button>
-    <p *ngIf="!isBiometricsEnabled" class="info">
+    <ion-button [disabled]="!settingsService.isBiometricsEnabled" (click)="setupVault('Device')"
+      >Use Device Biometrics</ion-button
+    >
+    <p *ngIf="!settingsService.isBiometricsEnabled" class="info">
       <ion-icon name="warning-outline"></ion-icon>
       <span>Biometrics are not currently enabled on your device. Please enable it.</span>
     </p>
@@ -26,8 +28,8 @@
       <ion-card-subtitle>Use a custom passcode to secure your access to the app.</ion-card-subtitle>
     </ion-card-header>
     <ion-icon class="xl" name="keypad"></ion-icon>
-    <ion-button fill="outline" (click)="setupVault('CustomPasscode')">Use Passcode</ion-button>
-    <p *ngIf="!hasSecureHardware" class="info">
+    <ion-button fill="outline" (click)="setupVault('SessionPIN')">Use Passcode</ion-button>
+    <p *ngIf="!settingsService.hasSecureHardware" class="info">
       <ion-icon name="warning-outline"></ion-icon>
       <span>Your device does not contain hardware security features.</span>
     </p>

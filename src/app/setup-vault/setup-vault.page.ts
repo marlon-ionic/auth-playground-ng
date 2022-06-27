@@ -1,43 +1,33 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { SessionVaultService } from '@app/core/session-vault/session-vault.service';
-import { App } from '@capacitor/app';
-import { Device } from '@ionic-enterprise/identity-vault';
+import { SettingsService, SETTINGS_KEYS, TYPE_OF_VAULT } from '@app/core/settings/settings.service';
 
 @Component({
   selector: 'app-setup-vault',
   templateUrl: './setup-vault.page.html',
   styleUrls: ['./setup-vault.page.scss'],
 })
-export class SetupVaultPage implements OnInit, OnDestroy {
-  hasSecureHardware = false;
-  isBiometricsEnabled = false;
-  isBiometricsSupported = false;
-  isSystemPasscodeSet = false;
+export class SetupVaultPage {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  vaultTypes = TYPE_OF_VAULT;
   disableLock = true;
-  constructor(private router: Router, private sessionVault: SessionVaultService) {}
+  constructor(
+    private router: Router,
+    private sessionVault: SessionVaultService,
+    public settingsService: SettingsService
+  ) {}
 
-  async ngOnInit(): Promise<void> {
-    await this.refreshDeviceVaultCapabilities();
-    await App.addListener('appStateChange', async ({ isActive }) => {
-      if (isActive) {
-        await this.refreshDeviceVaultCapabilities();
-      }
-    });
-  }
-  async ngOnDestroy(): Promise<void> {
-    await App.removeAllListeners();
-  }
-
-  async setupVault(typeOfVault: 'Biometrics' | 'CustomPasscode'): Promise<void> {
-    switch (typeOfVault) {
-      case 'Biometrics':
+  async setupVault(value: 'Device' | 'SessionPIN'): Promise<void> {
+    switch (value) {
+      case TYPE_OF_VAULT.BIOMETRICS:
         await this.useDevice();
         break;
-      case 'CustomPasscode':
+      case TYPE_OF_VAULT.CUSTOM_PASSCODE:
         await this.useCustomPasscode();
     }
-    localStorage.setItem('hasBeenVaultSetupBeenPresented', 'true');
+    await this.settingsService.setItem(SETTINGS_KEYS.HAS_SETUP_SECURITY, true);
+    await this.settingsService.setItem(SETTINGS_KEYS.VAULT_TYPE, value);
     this.router.navigateByUrl('/tabs', { replaceUrl: true });
   }
 
@@ -46,20 +36,8 @@ export class SetupVaultPage implements OnInit, OnDestroy {
     return await this.sessionVault.setUnlockMode('SessionPIN');
   }
 
-  async useSystemPasscode() {
-    this.disableLock = false;
-    return await this.sessionVault.setUnlockMode('SystemPIN');
-  }
-
   async useDevice() {
     this.disableLock = false;
     return await this.sessionVault.setUnlockMode('Device');
-  }
-
-  private async refreshDeviceVaultCapabilities(): Promise<void> {
-    this.hasSecureHardware = await Device.hasSecureHardware();
-    this.isBiometricsEnabled = await Device.isBiometricsEnabled();
-    this.isBiometricsSupported = await Device.isBiometricsSupported();
-    this.isSystemPasscodeSet = await Device.isSystemPasscodeSet();
   }
 }
